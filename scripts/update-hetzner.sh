@@ -20,6 +20,10 @@ compose_cmd() {
         --env-file "$ENV_FILE" "$@"
 }
 
+ensure_git_safe_directory() {
+    git config --global --add safe.directory "$INSTALL_DIR"
+}
+
 merge_new_env_keys() {
     if [ -f "$ENV_FILE" ] && [ -f "$INSTALL_DIR/.env.production" ]; then
         awk -F '=' '!seen[$1]++' "$ENV_FILE" "$INSTALL_DIR/.env.production" > "$ENV_FILE.tmp"
@@ -66,6 +70,8 @@ if ! command -v docker compose >/dev/null 2>&1; then
     echo "ERROR: Docker Compose plugin is not installed"
     exit 1
 fi
+
+ensure_git_safe_directory
 
 echo "[1/7] Preparing backup metadata..."
 mkdir -p "$BACKUP_DIR"
