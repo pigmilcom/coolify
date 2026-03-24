@@ -1,0 +1,9 @@
+services:
+  coolify:
+    image: cpm:custom
+    build:
+      context: .
+      dockerfile: ./docker/production/Dockerfile
+      args:
+        USER_ID: 9999
+        GROUP_ID: 9999

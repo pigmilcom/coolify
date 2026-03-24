@@ -7,7 +7,7 @@ set -euo pipefail
 
 GITHUB_REPO="https://github.com/pigmilcom/cpm.git"
 BRANCH="v4.x"
-INSTALL_DIR="/opt/cpm"
+INSTALL_DIR="/data/coolify/source"
 ENV_FILE="$INSTALL_DIR/.env"
 DATE=$(date +"%Y%m%d-%H%M%S")
 
@@ -62,6 +62,7 @@ fi
 
 # ─── 3. Clone / update repo ───────────────────────────────────────────────────
 echo "[3/6] Cloning repo: $GITHUB_REPO ($BRANCH)..."
+mkdir -p "$(dirname "$INSTALL_DIR")"
 if [ -d "$INSTALL_DIR/.git" ]; then
     echo " - Repo already exists, pulling latest..."
     git -C "$INSTALL_DIR" fetch origin
@@ -99,6 +100,8 @@ set_env "APP_ENV"        "production"
 set_env "APP_DEBUG"      "false"
 set_env "APP_ID"         "$(openssl rand -hex 16)"
 set_env "APP_KEY"        "base64:$(openssl rand -base64 32)"
+set_env "DB_USERNAME"    "coolify"
+set_env "DB_DATABASE"    "coolify"
 set_env "DB_PASSWORD"    "$(openssl rand -base64 32)"
 set_env "REDIS_PASSWORD" "$(openssl rand -base64 32)"
 set_env "PUSHER_APP_ID"  "$(openssl rand -hex 32)"
@@ -107,7 +110,7 @@ set_env "PUSHER_APP_SECRET" "$(openssl rand -hex 32)"
 
 # Set APP_URL  to the server's public IP if not already set
 if grep -q "^APP_URL=$" "$ENV_FILE" 2>/dev/null || ! grep -q "^APP_URL=" "$ENV_FILE" 2>/dev/null; then
-    PUBLIC_IP=$(curl -4s --max-time 5 ifconfig.io || true)
+    PUBLIC_IP=$(curl -4s --max-time 5 https://ifconfig.io || true)
     if [ -n "$PUBLIC_IP" ]; then
         set_env "APP_URL" "http://$PUBLIC_IP:8000"
     fi
@@ -116,6 +119,23 @@ fi
 set_env "APP_PORT"       "8000"
 set_env "APP_NAME"       "Coolify"
 set_env "SSH_MUX_ENABLED" "false"
+set_env "REGISTRY_URL" "${REGISTRY_URL:-ghcr.io}"
+set_env "AUTOUPDATE" "${AUTOUPDATE:-true}"
+set_env "DOCKER_ADDRESS_POOL_BASE" "${DOCKER_ADDRESS_POOL_BASE:-10.0.0.0/8}"
+set_env "DOCKER_ADDRESS_POOL_SIZE" "${DOCKER_ADDRESS_POOL_SIZE:-24}"
+set_env "DOCKER_POOL_FORCE_OVERRIDE" "${DOCKER_POOL_FORCE_OVERRIDE:-false}"
+
+if [ -n "${ROOT_USERNAME:-}" ]; then
+    set_env "ROOT_USERNAME" "$ROOT_USERNAME"
+fi
+
+if [ -n "${ROOT_USER_EMAIL:-}" ]; then
+    set_env "ROOT_USER_EMAIL" "$ROOT_USER_EMAIL"
+fi
+
+if [ -n "${ROOT_USER_PASSWORD:-}" ]; then
+    set_env "ROOT_USER_PASSWORD" "$ROOT_USER_PASSWORD"
+fi
 
 echo " - .env ready."
 
@@ -125,6 +145,11 @@ mkdir -p /data/coolify/{source,ssh/keys,ssh/mux,applications,databases,backups,s
 chown -R 9999:root /data/coolify 2>/dev/null || true
 chmod -R 700 /data/coolify
 
+if ! docker network inspect coolify >/dev/null 2>&1; then
+    echo " - Creating Docker network: coolify"
+    docker network create coolify >/dev/null
+fi
+
 echo " - Checking local firewall rules..."
 allow_firewall_port_if_needed
 
@@ -132,12 +157,12 @@ allow_firewall_port_if_needed
 echo "[6/6] Building and starting CPM..."
 cd "$INSTALL_DIR"
 
-# We build from source (dev Dockerfile) so your custom code is what runs.
-# docker-compose.prod.yml uses a pre-built ghcr.io image, so we use the dev
-# build config instead, with production env values from .env.
+# Build the production image from your checked-out source code so vendor
+# dependencies and frontend assets are baked into the image.
 docker compose \
     -f docker-compose.yml \
-    -f docker-compose.dev.yml \
+    -f docker-compose.prod.yml \
+    -f docker-compose.source.prod.yml \
     --env-file "$ENV_FILE" \
     up -d --build \
     coolify postgres redis soketi
@@ -164,7 +189,7 @@ if [ "$HEALTH" != "healthy" ]; then
     echo "WARNING: Container did not reach healthy state in ${MAX_WAIT}s."
     echo "Check logs with:  docker logs coolify"
 else
-    PUBLIC_IP=$(curl -4s --max-time 5 ifconfig.io 2>/dev/null || echo "<your-server-ip>")
+    PUBLIC_IP=$(curl -4s --max-time 5 https://ifconfig.io 2>/dev/null || echo "<your-server-ip>")
     LOCAL_HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:8000" 2>/dev/null || echo "000")
     echo ""
     echo "============================================================"
@@ -181,7 +206,7 @@ else
     echo " Useful commands:"
     echo "   docker logs -f coolify"
     echo "   docker exec -it coolify php artisan migrate"
-    echo "   docker compose -f $INSTALL_DIR/docker-compose.yml -f $INSTALL_DIR/docker-compose.dev.yml ps"
+    echo "   docker compose -f $INSTALL_DIR/docker-compose.yml -f $INSTALL_DIR/docker-compose.prod.yml -f $INSTALL_DIR/docker-compose.source.prod.yml ps"
     echo ""
     echo " WARNING: Back up $ENV_FILE to a safe location!"
 fi
