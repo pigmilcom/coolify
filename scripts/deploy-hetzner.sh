@@ -11,6 +11,18 @@ INSTALL_DIR="/opt/cpm"
 ENV_FILE="$INSTALL_DIR/.env"
 DATE=$(date +"%Y%m%d-%H%M%S")
 
+allow_firewall_port_if_needed() {
+    if command -v ufw >/dev/null 2>&1; then
+        UFW_STATUS=$(ufw status 2>/dev/null | head -n 1 || true)
+        if echo "$UFW_STATUS" | grep -qi "Status: active"; then
+            if ! ufw status 2>/dev/null | grep -qE "(^|\s)8000/tcp\s+ALLOW"; then
+                echo " - UFW is active, opening port 8000/tcp"
+                ufw allow 8000/tcp >/dev/null 2>&1 || true
+            fi
+        fi
+    fi
+}
+
 echo ""
 echo "============================================================"
 echo "  CPM (Custom Coolify) - Hetzner Production Deployment"
@@ -113,6 +125,9 @@ mkdir -p /data/coolify/{source,ssh/keys,ssh/mux,applications,databases,backups,s
 chown -R 9999:root /data/coolify 2>/dev/null || true
 chmod -R 700 /data/coolify
 
+echo " - Checking local firewall rules..."
+allow_firewall_port_if_needed
+
 # ─── 6. Build & launch ────────────────────────────────────────────────────────
 echo "[6/6] Building and starting CPM..."
 cd "$INSTALL_DIR"
@@ -150,11 +165,18 @@ if [ "$HEALTH" != "healthy" ]; then
     echo "Check logs with:  docker logs coolify"
 else
     PUBLIC_IP=$(curl -4s --max-time 5 ifconfig.io 2>/dev/null || echo "<your-server-ip>")
+    LOCAL_HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:8000" 2>/dev/null || echo "000")
     echo ""
     echo "============================================================"
     echo " CPM is running!"
     echo " Open: http://$PUBLIC_IP:8000"
     echo "============================================================"
+    if [ "$LOCAL_HTTP_STATUS" = "200" ] || [ "$LOCAL_HTTP_STATUS" = "302" ]; then
+        echo " Local check: http://127.0.0.1:8000 is reachable (HTTP $LOCAL_HTTP_STATUS)."
+    else
+        echo " Local check warning: http://127.0.0.1:8000 returned HTTP $LOCAL_HTTP_STATUS."
+    fi
+    echo " If public access still fails, check Hetzner Cloud Firewall/NACL and allow inbound TCP 8000."
     echo ""
     echo " Useful commands:"
     echo "   docker logs -f coolify"
