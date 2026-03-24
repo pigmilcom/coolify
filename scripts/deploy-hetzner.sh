@@ -116,11 +116,6 @@ fi
 set_env "APP_PORT"       "8000"
 set_env "APP_NAME"       "Coolify"
 set_env "SSH_MUX_ENABLED" "false"
-set_env "REGISTRY_URL" "${REGISTRY_URL:-ghcr.io}"
-set_env "AUTOUPDATE" "${AUTOUPDATE:-true}"
-set_env "DOCKER_ADDRESS_POOL_BASE" "${DOCKER_ADDRESS_POOL_BASE:-10.0.0.0/8}"
-set_env "DOCKER_ADDRESS_POOL_SIZE" "${DOCKER_ADDRESS_POOL_SIZE:-24}"
-set_env "DOCKER_POOL_FORCE_OVERRIDE" "${DOCKER_POOL_FORCE_OVERRIDE:-false}"
 
 echo " - .env ready."
 
