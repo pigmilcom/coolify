@@ -1,11 +1,11 @@
 #!/bin/bash
 ## Hetzner production deployment script for custom Coolify (pigmilcom/cpm)
 ## Run as root on a fresh Debian/Ubuntu Hetzner server:
-##   curl -fsSL https://raw.githubusercontent.com/pigmilcom/cpm/v4.x/scripts/deploy-hetzner.sh | bash
+##   curl -fsSL raw.githubusercontent.com/pigmilcom/cpm/v4.x/scripts/deploy-hetzner.sh | bash
 
 set -euo pipefail
 
-GITHUB_REPO="https://github.com/pigmilcom/cpm.git"
+GITHUB_REPO="github.com/pigmilcom/cpm.git"
 BRANCH="v4.x"
 INSTALL_DIR="/opt/cpm"
 ENV_FILE="$INSTALL_DIR/.env"
@@ -31,7 +31,7 @@ apt-get install -y -qq curl wget git jq openssl ca-certificates gnupg lsb-releas
 # ─── 2. Docker ────────────────────────────────────────────────────────────────
 echo "[2/6] Installing Docker..."
 if ! command -v docker &>/dev/null; then
-    curl -fsSL https://get.docker.com | sh
+    curl -fsSL get.docker.com | sh
     systemctl enable docker
     systemctl start docker
     echo " - Docker installed."
@@ -42,7 +42,7 @@ fi
 if ! command -v docker compose &>/dev/null; then
     # Docker Compose v2 plugin
     mkdir -p /usr/local/lib/docker/cli-plugins
-    curl -SL "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" \
+    curl -SL "github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" \
         -o /usr/local/lib/docker/cli-plugins/docker-compose
     chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
     echo " - Docker Compose installed."
@@ -95,7 +95,7 @@ set_env "PUSHER_APP_SECRET" "$(openssl rand -hex 32)"
 
 # Set APP_URL  to the server's public IP if not already set
 if grep -q "^APP_URL=$" "$ENV_FILE" 2>/dev/null || ! grep -q "^APP_URL=" "$ENV_FILE" 2>/dev/null; then
-    PUBLIC_IP=$(curl -4s --max-time 5 https://ifconfig.io || true)
+    PUBLIC_IP=$(curl -4s --max-time 5 ifconfig.io || true)
     if [ -n "$PUBLIC_IP" ]; then
         set_env "APP_URL" "http://$PUBLIC_IP:8000"
     fi
@@ -149,7 +149,7 @@ if [ "$HEALTH" != "healthy" ]; then
     echo "WARNING: Container did not reach healthy state in ${MAX_WAIT}s."
     echo "Check logs with:  docker logs coolify"
 else
-    PUBLIC_IP=$(curl -4s --max-time 5 https://ifconfig.io 2>/dev/null || echo "<your-server-ip>")
+    PUBLIC_IP=$(curl -4s --max-time 5 ifconfig.io 2>/dev/null || echo "<your-server-ip>")
     echo ""
     echo "============================================================"
     echo " CPM is running!"
