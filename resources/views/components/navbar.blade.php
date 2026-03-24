@@ -339,7 +339,7 @@
                         @endif
                     @endif
                     <div class="flex-1"></div>
-                    @if (isInstanceAdmin() && !isCloud())
+                    @if (isInstanceAdmin() && !isCloud() && isDev())
                         @persist('upgrade')
                             <li>
                                 <livewire:upgrade />
