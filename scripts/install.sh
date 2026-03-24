@@ -191,6 +191,24 @@ if [ "$HEALTH" != "healthy" ]; then
 else
     PUBLIC_IP=$(curl -4s --max-time 5 https://ifconfig.io 2>/dev/null || echo "<your-server-ip>")
     LOCAL_HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:8000" 2>/dev/null || echo "000")
+
+        KEY_PATH="/data/coolify/ssh/keys/id.root@host.docker.internal"
+        PUB_KEY_PATH="${KEY_PATH}.pub"
+
+        rm -f "$KEY_PATH" "$PUB_KEY_PATH"
+        ssh-keygen -t ed25519 -a 100 \
+            -f "$KEY_PATH" \
+            -q -N "" -C root@coolify
+
+        chown 9999 "$KEY_PATH"
+
+        mkdir -p ~/.ssh
+        touch ~/.ssh/authorized_keys
+        cat "$PUB_KEY_PATH" >> ~/.ssh/authorized_keys
+
+        chmod 700 ~/.ssh
+        chmod 600 ~/.ssh/authorized_keys
+
     echo ""
     echo "============================================================"
     echo " CPM is running!"
@@ -207,6 +225,9 @@ else
     echo "   docker logs -f coolify"
     echo "   docker exec -it coolify php artisan migrate"
     echo "   docker compose -f $INSTALL_DIR/docker-compose.yml -f $INSTALL_DIR/docker-compose.prod.yml -f $INSTALL_DIR/docker-compose.source.prod.yml ps"
+    echo ""
+    echo " Private key (copy and store safely):"
+    cat "$KEY_PATH"
     echo ""
     echo " WARNING: Back up $ENV_FILE to a safe location!"
 fi
