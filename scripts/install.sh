@@ -36,7 +36,7 @@ echo "=========================================="
 echo ""
 echo "Welcome to Coolify Installer!"
 echo "This script will install everything for you. Sit back and relax."
-echo "Source code: github.com/coollabsio/coolify/blob/v4.x/scripts/install.sh"
+echo "Source code: https://github.com/coollabsio/coolify/blob/v4.x/scripts/install.sh"
 
 # Predefined root user
 ROOT_USERNAME=${ROOT_USERNAME:-}
@@ -483,7 +483,7 @@ if [ "$SSH_PERMIT_ROOT_LOGIN" = "yes" ] || [ "$SSH_PERMIT_ROOT_LOGIN" = "without
     echo " - SSH PermitRootLogin is enabled."
 else
     echo " - SSH PermitRootLogin is disabled."
-    echo "   If you have problems with SSH, please read this: coolify.io/docs/knowledge-base/server/openssh"
+    echo "   If you have problems with SSH, please read this: https://coolify.io/docs/knowledge-base/server/openssh"
 fi
 
 # Detect if docker is installed via snap
@@ -536,7 +536,7 @@ install_docker_manually() {
     esac
     if ! [ -x "$(command -v docker)" ]; then
         echo "Docker installation failed."
-        echo "   Please visit docs.docker.com/engine/install/ and install Docker manually to continue."
+        echo "   Please visit https://docs.docker.com/engine/install/ and install Docker manually to continue."
         exit 1
     else
         echo "Docker installed successfully."
@@ -552,7 +552,7 @@ if ! [ -x "$(command -v docker)" ]; then
         dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo >/dev/null 2>&1
         dnf install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin >/dev/null 2>&1
         if ! [ -x "$(command -v docker)" ]; then
-            echo " - Docker could not be installed automatically. Please visit docs.docker.com/engine/install/ and install Docker manually to continue."
+            echo " - Docker could not be installed automatically. Please visit https://docs.docker.com/engine/install/ and install Docker manually to continue."
             exit 1
         fi
         systemctl start docker >/dev/null 2>&1
@@ -564,7 +564,7 @@ if ! [ -x "$(command -v docker)" ]; then
         service docker start >/dev/null 2>&1
         if ! [ -x "$(command -v docker)" ]; then
             echo " - Failed to install Docker with apk. Try to install it manually."
-            echo "   Please visit wiki.alpinelinux.org/wiki/Docker for more information."
+            echo "   Please visit https://wiki.alpinelinux.org/wiki/Docker for more information."
             exit 1
         fi
         ;;
@@ -573,7 +573,7 @@ if ! [ -x "$(command -v docker)" ]; then
         systemctl enable docker.service >/dev/null 2>&1
         if ! [ -x "$(command -v docker)" ]; then
             echo " - Failed to install Docker with pacman. Try to install it manually."
-            echo "   Please visit wiki.archlinux.org/title/docker for more information."
+            echo "   Please visit https://wiki.archlinux.org/title/docker for more information."
             exit 1
         fi
         ;;
@@ -587,7 +587,7 @@ if ! [ -x "$(command -v docker)" ]; then
         systemctl enable docker >/dev/null 2>&1
         if ! [ -x "$(command -v docker)" ]; then
             echo " - Failed to install Docker with dnf. Try to install it manually."
-            echo "   Please visit www.cyberciti.biz/faq/how-to-install-docker-on-amazon-linux-2/ for more information."
+            echo "   Please visit https://www.cyberciti.biz/faq/how-to-install-docker-on-amazon-linux-2/ for more information."
             exit 1
         fi
         ;;
@@ -601,7 +601,7 @@ if ! [ -x "$(command -v docker)" ]; then
         fi
         dnf install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin >/dev/null 2>&1
         if ! [ -x "$(command -v docker)" ]; then
-            echo " - Docker could not be installed automatically. Please visit docs.docker.com/engine/install/ and install Docker manually to continue."
+            echo " - Docker could not be installed automatically. Please visit https://docs.docker.com/engine/install/ and install Docker manually to continue."
             exit 1
         fi
         systemctl start docker >/dev/null 2>&1
@@ -1002,9 +1002,9 @@ echo -e "\033[0;35m
 # Fetch public IPs in parallel for faster completion
 IPV4_TMP=$(mktemp)
 IPV6_TMP=$(mktemp)
-curl -4s --max-time 5 ifconfig.io > "$IPV4_TMP" 2>/dev/null &
+curl -4s --max-time 5 https://ifconfig.io > "$IPV4_TMP" 2>/dev/null &
 IPV4_PID=$!
-curl -6s --max-time 5 ifconfig.io > "$IPV6_TMP" 2>/dev/null &
+curl -6s --max-time 5 https://ifconfig.io > "$IPV6_TMP" 2>/dev/null &
 IPV6_PID=$!
 wait $IPV4_PID 2>/dev/null || true
 wait $IPV6_PID 2>/dev/null || true
