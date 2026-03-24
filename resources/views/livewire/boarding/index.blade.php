@@ -1,13 +1,13 @@
 @php use App\Enums\ProxyTypes; @endphp
 <x-slot:title>
-    Onboarding | Coolify
+    Onboarding | Console
     </x-slot>
     <section class="w-full">
         <div class="flex flex-col items-center w-full space-y-8">
             @if ($currentState === 'welcome')
                 <div class="w-full max-w-2xl text-center space-y-8">
                     <div class="space-y-4">
-                        <h1 class="text-4xl font-bold lg:text-6xl">Welcome to Coolify</h1>
+                        <h1 class="text-4xl font-bold lg:text-6xl">Welcome to Console</h1>
                         <p class="text-lg lg:text-xl dark:text-neutral-400">
                             Connect your first server and start deploying in minutes
                         </p>

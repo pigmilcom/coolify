@@ -1,6 +1,6 @@
 <div>
     <x-slot:title>
-        Dashboard | Coolify
+        Dashboard | Console
     </x-slot>
     @if (session('error'))
         <span x-data x-init="$wire.emit('error', '{{ session('error') }}')" />
