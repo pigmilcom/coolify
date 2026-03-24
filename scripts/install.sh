@@ -15,7 +15,7 @@ set -e # Exit immediately if a command exits with a non-zero status
 ## $1 could be empty, so we need to disable this check
 #set -u # Treat unset variables as an error and exit
 set -o pipefail # Cause a pipeline to return the status of the last command that exited with a non-zero status
-CDN="cdn.coollabs.io/coolify"
+CDN="https://cdn.coollabs.io/coolify"
 DATE=$(date +"%Y%m%d-%H%M%S")
 
 OS_TYPE=$(grep -w "ID" /etc/os-release | cut -d "=" -f 2 | tr -d '"')
@@ -240,7 +240,7 @@ INSTALLATION_LOG_WITH_DATE="/data/coolify/source/installation-${DATE}.log"
 exec > >(tee -a $INSTALLATION_LOG_WITH_DATE) 2>&1
 
 getAJoke() {
-    JOKES=$(curl -s --max-time 2 "v2.jokeapi.dev/joke/Programming?blacklistFlags=nsfw,religious,political,racist,sexist,explicit&format=txt&type=single" || true)
+    JOKES=$(curl -s --max-time 2 "https://v2.jokeapi.dev/joke/Programming?blacklistFlags=nsfw,religious,political,racist,sexist,explicit&format=txt&type=single" || true)
     if [ "$JOKES" != "" ]; then
         echo -e " - Until then, here's a joke for you:\n"
         echo -e "$JOKES\n"
@@ -499,9 +499,9 @@ fi
 
 install_docker() {
     set +e
-    curl -s releases.rancher.com/install-docker/${DOCKER_VERSION}.sh | sh 2>&1 || true
+    curl -s https://releases.rancher.com/install-docker/${DOCKER_VERSION}.sh | sh 2>&1 || true
     if ! [ -x "$(command -v docker)" ]; then
-        curl -s get.docker.com | sh -s -- --version ${DOCKER_VERSION} 2>&1
+        curl -s https://get.docker.com | sh -s -- --version ${DOCKER_VERSION} 2>&1
         if ! [ -x "$(command -v docker)" ]; then
             echo "Automated Docker installation failed. Trying manual installation."
             install_docker_manually
@@ -519,12 +519,12 @@ install_docker_manually() {
         fi
         apt-get install -y ca-certificates curl
         install -m 0755 -d /etc/apt/keyrings
-        curl -fsSL download.docker.com/linux/$OS_TYPE/gpg -o /etc/apt/keyrings/docker.asc
+        curl -fsSL https://download.docker.com/linux/$OS_TYPE/gpg -o /etc/apt/keyrings/docker.asc
         chmod a+r /etc/apt/keyrings/docker.asc
 
         # Add the repository to Apt sources
         echo \
-            "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] download.docker.com/linux/$OS_TYPE \
+            "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/$OS_TYPE \
                   $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" |
             tee /etc/apt/sources.list.d/docker.list
         apt-get update
@@ -549,7 +549,7 @@ if ! [ -x "$(command -v docker)" ]; then
     getAJoke
     case "$OS_TYPE" in
     "almalinux")
-        dnf config-manager --add-repo=download.docker.com/linux/centos/docker-ce.repo >/dev/null 2>&1
+        dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo >/dev/null 2>&1
         dnf install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin >/dev/null 2>&1
         if ! [ -x "$(command -v docker)" ]; then
             echo " - Docker could not be installed automatically. Please visit docs.docker.com/engine/install/ and install Docker manually to continue."
@@ -581,7 +581,7 @@ if ! [ -x "$(command -v docker)" ]; then
         dnf install docker -y >/dev/null 2>&1
         DOCKER_CONFIG=${DOCKER_CONFIG:-/usr/local/lib/docker}
         mkdir -p $DOCKER_CONFIG/cli-plugins >/dev/null 2>&1
-        curl -sL "github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o $DOCKER_CONFIG/cli-plugins/docker-compose >/dev/null 2>&1
+        curl -sL "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o $DOCKER_CONFIG/cli-plugins/docker-compose >/dev/null 2>&1
         chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose >/dev/null 2>&1
         systemctl start docker >/dev/null 2>&1
         systemctl enable docker >/dev/null 2>&1
@@ -594,10 +594,10 @@ if ! [ -x "$(command -v docker)" ]; then
     "centos" | "fedora" | "rhel" | "tencentos")
         if [ -x "$(command -v dnf5)" ]; then
             # dnf5 is available
-            dnf config-manager addrepo --from-repofile=download.docker.com/linux/$OS_TYPE/docker-ce.repo --overwrite >/dev/null 2>&1
+            dnf config-manager addrepo --from-repofile=https://download.docker.com/linux/$OS_TYPE/docker-ce.repo --overwrite >/dev/null 2>&1
         else
             # dnf5 is not available, use dnf
-            dnf config-manager --add-repo=download.docker.com/linux/$OS_TYPE/docker-ce.repo >/dev/null 2>&1
+            dnf config-manager --add-repo=https://download.docker.com/linux/$OS_TYPE/docker-ce.repo >/dev/null 2>&1
         fi
         dnf install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin >/dev/null 2>&1
         if ! [ -x "$(command -v docker)" ]; then
