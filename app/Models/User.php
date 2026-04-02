@@ -78,16 +78,30 @@ class User extends Authenticatable implements SendsEmail
         parent::boot();
 
         static::created(function (User $user) {
-            $team = [
+            // Root user always gets the Root Team
+            if ($user->id === 0) {
+                $new_team = Team::create([
+                    'id' => 0,
+                    'name' => 'Root Team',
+                    'personal_team' => true,
+                    'show_boarding' => true,
+                ]);
+                $user->teams()->attach($new_team, ['role' => 'owner']);
+
+                return;
+            }
+
+            // Invited users skip auto-team creation — they join via the invitation acceptance flow
+            if (TeamInvitation::whereEmail($user->email)->exists()) {
+                return;
+            }
+
+            // First-time owner with no pending invitation gets a personal team with boarding enabled
+            $new_team = Team::create([
                 'name' => $user->name."'s Team",
                 'personal_team' => true,
                 'show_boarding' => true,
-            ];
-            if ($user->id === 0) {
-                $team['id'] = 0;
-                $team['name'] = 'Root Team';
-            }
-            $new_team = Team::create($team);
+            ]);
             $user->teams()->attach($new_team, ['role' => 'owner']);
         });
 
