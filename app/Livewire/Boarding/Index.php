@@ -100,10 +100,6 @@ class Index extends Component
             return;
         }
 
-        if ($user?->isMember() && $user->currentTeam()->show_boarding === true) {
-            return redirect()->route('dashboard');
-        }
-
         $this->minDockerVersion = str(config('constants.docker.minimum_required_version'))->before('.');
         $this->privateKeyName = generate_random_name();
         $this->remoteServerName = generate_random_name();
