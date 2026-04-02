@@ -24,7 +24,9 @@
                             </thead>
                             <tbody>
                                 @foreach (currentTeam()->members as $member)
-                                    <livewire:team.member :member="$member" :wire:key="$member->id" />
+                                    @if ($member->pivot->role !== 'owner' || auth()->user()->isOwner())
+                                        <livewire:team.member :member="$member" :wire:key="$member->id" />
+                                    @endif
                                 @endforeach
                             </tbody>
                         </table>
