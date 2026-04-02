@@ -97,12 +97,14 @@ class User extends Authenticatable implements SendsEmail
             }
 
             // First-time owner with no pending invitation gets a personal team with boarding enabled
+            /*    
             $new_team = Team::create([
-                'name' => $user->name."'s Team",
-                'personal_team' => true,
-                'show_boarding' => true,
-            ]);
-            $user->teams()->attach($new_team, ['role' => 'owner']);
+                    'name' => $user->name."'s Team",
+                    'personal_team' => true,
+                    'show_boarding' => true,
+                ]);
+            $user->teams()->attach($new_team, ['role' => 'owner']); 
+            */
         });
 
         static::deleting(function (User $user) {
