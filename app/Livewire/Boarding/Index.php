@@ -85,7 +85,22 @@ class Index extends Component
 
     public function mount()
     {
-        if (auth()->user()?->isMember() && auth()->user()->currentTeam()->show_boarding === true) {
+        $user = auth()->user();
+
+        // Owners see the onboarding flow
+        if ($user?->isOwner()) {
+            // continue into normal boarding mount logic below
+        } elseif ($user?->teams?->count() > 0) {
+            // Non-owners that belong to at least one team go straight to the team page
+            return redirect()->route('team.index');
+        } else {
+            // Non-owners with no teams: show access-denied state (auto sign-out triggered from blade)
+            $this->currentState = 'no-team-access';
+
+            return;
+        }
+
+        if ($user?->isMember() && $user->currentTeam()->show_boarding === true) {
             return redirect()->route('dashboard');
         }
 
@@ -178,6 +193,13 @@ class Index extends Component
         refreshSession();
 
         return redirect()->route('dashboard');
+    }
+
+    public function signOutNoTeam(): void
+    {
+        auth()->logout();
+        session()->invalidate();
+        session()->regenerateToken();
     }
 
     public function setServerType(string $type)

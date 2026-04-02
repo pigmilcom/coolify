@@ -4,7 +4,24 @@
     </x-slot>
     <section class="w-full">
         <div class="flex flex-col items-center w-full space-y-8">
-            @if ($currentState === 'welcome')
+            @if ($currentState === 'no-team-access')
+                <div class="w-full max-w-md text-center space-y-6"
+                    x-init="$wire.signOutNoTeam()">
+                    <div class="p-8 rounded-lg border border-error space-y-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto size-12 text-error" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                        </svg>
+                        <h2 class="text-xl font-bold">Access Denied</h2>
+                        <p class="dark:text-neutral-400 text-sm">
+                            Your account has not been assigned to any team. Please contact your administrator to get access.
+                        </p>
+                        <a href="mailto:support@pigmil.com"
+                            class="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-md bg-coollabs text-white text-sm font-medium hover:bg-coollabs-100 transition-colors">
+                            Contact Support
+                        </a>
+                    </div>
+                </div>
+            @elseif ($currentState === 'welcome')
                 <div class="w-full max-w-2xl text-center space-y-8">
                     <div class="space-y-4">
                         <h1 class="text-4xl font-bold lg:text-6xl">Welcome to Console</h1>
@@ -722,7 +739,7 @@
             @endif
         </div>
 
-        @if ($currentState !== 'welcome' && $currentState !== 'create-resource')
+        @if ($currentState !== 'welcome' && $currentState !== 'create-resource' && $currentState !== 'no-team-access')
             <div class="flex flex-col items-center gap-4 pt-8 mt-8 border-t border-neutral-200 dark:border-coolgray-400">
                 <div class="flex justify-center gap-6 text-sm">
                     <button wire:click='skipBoarding'
