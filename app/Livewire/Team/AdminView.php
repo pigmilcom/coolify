@@ -17,7 +17,7 @@ class AdminView extends Component
 
     public function mount()
     {
-        if (! isInstanceAdmin()) {
+        if (! auth()->user()->isOwner()) {
             return redirect()->route('dashboard');
         }
         $this->getUsers();
@@ -51,7 +51,7 @@ class AdminView extends Component
 
     public function delete($id, $password)
     {
-        if (! isInstanceAdmin()) {
+        if (! auth()->user()->isOwner()) {
             return redirect()->route('dashboard');
         }
 
@@ -59,7 +59,7 @@ class AdminView extends Component
             return;
         }
 
-        if (! auth()->user()->isInstanceAdmin()) {
+        if (! auth()->user()->isOwner()) {
             return $this->dispatch('error', 'You are not authorized to delete users');
         }
 

@@ -18,7 +18,7 @@
                 href="{{ route('team.member.index') }}">
                 Members
             </a>
-            @if (isInstanceAdmin())
+            @if (auth()->user()->isOwner())
                 <a class="{{ request()->routeIs('team.admin-view') ? 'dark:text-white' : '' }}" {{ wireNavigate() }}
                     href="{{ route('team.admin-view') }}">
                     Admin View
