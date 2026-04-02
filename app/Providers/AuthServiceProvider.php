@@ -71,7 +71,12 @@ class AuthServiceProvider extends ServiceProvider
 
         // Register gate for terminal access
         Gate::define('canAccessTerminal', function ($user) {
-            return $user->isAdmin() || $user->isOwner();
+            return $user->isOwner();
+        });
+
+        // Register gate for server access
+        Gate::define('canAccessServers', function ($user) {
+            return $user->isOwner();
         });
     }
 }

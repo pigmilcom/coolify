@@ -43,7 +43,7 @@
             }
         }
     @endphp
-    <title>{{ $name }}{{ $title ?? 'Console' }}</title>
+    <title>@isset($title){{ $title }} | @endisset{{ $name ? trim($name) : 'Console' }} | PIGMIL</title>
     @env('local')
         <link rel="icon" href="{{ asset('coolify-logo-dev-transparent.png') }}" type="image/png" />
     @else

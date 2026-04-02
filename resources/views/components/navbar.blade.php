@@ -130,6 +130,7 @@
                             <span class="menu-item-label">Projects</span>
                         </a>
                     </li>
+                    @can('canAccessServers')
                     <li>
                         <a title="Servers" {{ wireNavigate() }}
                             class="{{ request()->is('server/*') || request()->is('servers') ? 'menu-item menu-item-active' : 'menu-item' }}"
@@ -148,7 +149,7 @@
                             <span class="menu-item-label">Servers</span>
                         </a>
                     </li>
-
+                    @endcan
                     <li>
                         <a title="Sources" {{ wireNavigate() }}
                             class="{{ request()->is('source*') ? 'menu-item-active menu-item' : 'menu-item' }}"

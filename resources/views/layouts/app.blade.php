@@ -21,9 +21,9 @@
             :class="pageWidth === 'full' ? '' : 'max-w-7xl'">
             <div class="relative z-50 lg:hidden" :class="open ? 'block' : 'hidden'" role="dialog" aria-modal="true">
                 <div class="fixed inset-0 bg-black/80" x-on:click="open = false"></div>
-                <div class="fixed inset-y-0 right-0 h-full flex">
+                <div class="fixed inset-y-0 left-0 h-full flex">
                     <div class="relative flex flex-1 w-full max-w-56 min-w-0">
-                        <div class="absolute top-0 flex justify-center w-16 pt-5 right-full">
+                        <div class="absolute top-0 flex justify-center w-16 pt-5 left-56">
                             <button type="button" class="-m-2.5 p-2.5" x-on:click="open = !open">
                                 <span class="sr-only">Close sidebar</span>
                                 <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -33,7 +33,7 @@
                             </button>
                         </div>
 
-                        <div class="flex flex-col pb-2 overflow-y-auto min-w-56 dark:bg-coolgray-100 gap-y-5 scrollbar min-w-0">
+                        <div class="flex flex-col pb-2 overflow-y-auto min-w-56 dark:bg-coolgray-100 gap-y-5 scrollbar">
                             <x-navbar />
                         </div>
                     </div>
@@ -48,11 +48,7 @@
 
             <div
                 class="sticky top-0 z-40 flex items-center justify-between px-4 py-4 gap-x-6 sm:px-6 lg:hidden bg-white/95 dark:bg-base/95 backdrop-blur-sm border-b border-neutral-300/50 dark:border-coolgray-200/50">
-                <div class="flex items-center gap-3 flex-shrink-0">
-                    <a href="/"
-                        class="text-xl font-bold tracking-wide dark:text-white hover:opacity-80 transition-opacity">Console</a>
-                    <livewire:switch-team />
-                </div>
+                
                 <button type="button" class="-m-2.5 p-2.5 dark:text-warning" x-on:click="open = !open">
                     <span class="sr-only">Open sidebar</span>
                     <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 24 24">
@@ -60,6 +56,11 @@
                             stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
                 </button>
+                <div class="flex items-center gap-3 shrink-0 mr-auto">
+                    <a href="/"
+                        class="text-xl font-bold tracking-wide dark:text-white hover:opacity-80 transition-opacity">Console</a>
+                    <livewire:switch-team />
+                </div>
             </div>
 
             <main class="lg:pl-56">

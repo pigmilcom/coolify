@@ -250,10 +250,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/tasks/{task_uuid}', ScheduledTaskShow::class)->name('project.service.scheduled-tasks');
     });
 
-    Route::get('/servers', ServerIndex::class)->name('server.index');
+    Route::get('/servers', ServerIndex::class)->name('server.index')->middleware('can.access.servers');
     // Route::get('/server/new', ServerCreate::class)->name('server.create');
 
-    Route::prefix('server/{server_uuid}')->group(function () {
+    Route::prefix('server/{server_uuid}')->middleware('can.access.servers')->group(function () {
         Route::get('/', ServerShow::class)->name('server.show');
         Route::get('/advanced', ServerAdvanced::class)->name('server.advanced');
         Route::get('/swarm', ServerSwarm::class)->name('server.swarm');

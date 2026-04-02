@@ -131,37 +131,7 @@
             x-transition:leave-end="opacity-0 -translate-y-2" class="absolute right-0 top-full mt-1 z-50 w-48" x-cloak>
             <div
                 class="p-1 bg-white border rounded-sm shadow-lg dark:bg-coolgray-200 dark:border-coolgray-300 border-neutral-300">
-                <div class="flex flex-col gap-1">
-                    <!-- What's New Section -->
-                    @if ($unreadCount > 0)
-                        <button wire:click="openWhatsNewModal" @click="dropdownOpen = false"
-                            class="px-1 dropdown-item-no-padding flex items-center justify-between">
-                            <div class="flex items-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <span>What's New</span>
-                            </div>
-                            <span
-                                class="bg-error text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                                {{ $unreadCount > 9 ? '9+' : $unreadCount }}
-                            </span>
-                        </button>
-                    @else
-                        <button wire:click="openWhatsNewModal" @click="dropdownOpen = false"
-                            class="px-1 dropdown-item-no-padding flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                            <span>Changelog</span>
-                        </button>
-                    @endif
-
-                    <!-- Divider -->
-                    <div class="border-b dark:border-coolgray-500 border-neutral-300"></div>
-
+                <div class="flex flex-col gap-1">  
                     <!-- Theme Section -->
                     <div class="font-bold border-b dark:border-coolgray-500 border-neutral-300 dark:text-white pb-1">
                         Appearance</div>
@@ -287,7 +257,7 @@
                 </div>
 
                 <!-- Search -->
-                <div class="pb-4 border-b dark:border-coolgray-200 flex-shrink-0">
+                <div class="pb-4 border-b dark:border-coolgray-200 shrink-0">
                     <div class="relative">
                         <input x-model="search" placeholder="Search updates..." class="input pl-10" />
                         <svg class="absolute left-3 top-2 w-4 h-4 dark:text-neutral-400" fill="none"

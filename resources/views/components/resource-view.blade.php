@@ -3,7 +3,7 @@
     '!cursor-not-allowed hover:border-l-red-500' => $upgrade,
  ])>
     <div class="flex items-center">
-        <div class="w-[4.5rem] h-[4.5rem] flex items-center justify-center text-black dark:text-white shrink-0 rounded-lg overflow-hidden">
+        <div class="w-18 h-18 flex items-center justify-center text-black dark:text-white shrink-0 rounded-lg overflow-hidden">
             {{ $logo }}
         </div>
         <div class="flex flex-col pl-3 space-y-1">

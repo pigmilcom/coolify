@@ -74,7 +74,7 @@
                             {{ $basic }}
                         @endisset
                     @endif
-                    <p class="mt-10 text-sm leading-6 dark:text-white h-[6.5rem]">Begin hosting your own services in the
+                    <p class="mt-10 text-sm leading-6 dark:text-white h-26">Begin hosting your own services in the
                         cloud.
                     </p>
                     <ul role="list" class="space-y-3 text-sm leading-6 ">
@@ -283,7 +283,7 @@
                     </div>
                     <div class="text-2xl font-semibold dark:text-white">Bring Your Own Servers</div>
                 </div>
-                <div class="mt-1 text-base leading-7 text-gray-300">
+                <div class="mt-1 text-base leading-7">
                     Bring your own server from any cloud providers, or even your own server at home! All you need is SSH
                     access. You will have full control over your server, and you can even use it for other purposes.
                 </div>
@@ -305,7 +305,7 @@
                     </div>
                     <div class="text-2xl font-semibold dark:text-white">Server Automations</div>
                 </div>
-                <div class="mt-1 text-base leading-7 text-gray-300">
+                <div class="mt-1 text-base leading-7">
                     Once you connected your server, Coolify will start managing it and do a
                     lot of administrative tasks for you. You can also write your own scripts to
                     automate your server<span class="dark:text-warning">*</span>.
@@ -327,7 +327,7 @@
                     </div>
                     <div class="text-2xl font-semibold dark:text-white">No Vendor Lock-in</div>
                 </div>
-                <div class="mt-1 text-base leading-7 text-gray-300">
+                <div class="mt-1 text-base leading-7">
                     You own your own data. All configurations saved on your own servers, so if
                     you decide to stop using Coolify, you can still continue to manage your
                     deployed resources.
@@ -350,7 +350,7 @@
                     </div>
                     <div class="text-2xl font-semibold dark:text-white">Monitoring</div>
                 </div>
-                <div class="mt-1 text-base leading-7 text-gray-300">
+                <div class="mt-1 text-base leading-7">
                     Coolify will automatically monitor your configured servers and deployed
                     resources. Notifies you if something goes wrong on your favourite
                     channels, like Discord, Telegram, via Email and more...
@@ -370,7 +370,7 @@
                     </div>
                     <div class="text-2xl font-semibold dark:text-white">Automatic Backups</div>
                 </div>
-                <div class="mt-1 text-base leading-7 text-gray-300">
+                <div class="mt-1 text-base leading-7">
                     We automatically backup your databases to any S3 compatible solution. If
                     something goes wrong, you can easily restore your data with a few clicks.
                 </div>
@@ -388,7 +388,7 @@
                     </div>
                     <div class="text-2xl font-semibold dark:text-white">Powerful API</div>
                 </div>
-                <div class="mt-1 text-base leading-7 text-gray-300">
+                <div class="mt-1 text-base leading-7">
                     Programmatically deploy, query, and manage your servers & resources.
                     Integrate to your CI/CD pipelines, or build your own custom integrations. <span
                         class="dark:text-warning">*</span>
@@ -410,7 +410,7 @@
                     </div>
                     <div class="text-2xl font-semibold dark:text-white">Push to Deploy</div>
                 </div>
-                <div class="mt-1 text-base leading-7 text-gray-300">
+                <div class="mt-1 text-base leading-7">
                     Git integration is default today. We support hosted (github.com,
                     gitlab.com<span class="inline-block dark:text-warning">*</span>) or self-hosted<span
                         class="dark:text-warning">*</span>
@@ -429,7 +429,7 @@
                     </div>
                     <div class="text-2xl font-semibold dark:text-white">Pull Request Deployments</div>
                 </div>
-                <div class="mt-1 text-base leading-7 text-gray-300">
+                <div class="mt-1 text-base leading-7">
                     Automagically deploy new commits and pull requests separately to quickly
                     review contributions and speed up your teamwork!
                 </div>
