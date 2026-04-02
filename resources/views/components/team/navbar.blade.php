@@ -1,9 +1,11 @@
 <div class="pb-6">
     <div class="flex items-end gap-2">
         <h1>Team</h1>
-        <x-modal-input buttonTitle="+ Add" title="New Team">
-            <livewire:team.create />
-        </x-modal-input>
+        @can('create', App\Models\Team::class)
+            <x-modal-input buttonTitle="+ Add" title="New Team">
+                <livewire:team.create />
+            </x-modal-input>
+        @endcan
     </div>
     <div class="subtitle">Team wide configurations.</div>
     <div class="navbar-main">

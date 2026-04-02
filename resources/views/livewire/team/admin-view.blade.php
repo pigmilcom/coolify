@@ -1,6 +1,6 @@
 <div>
     <x-slot:title>
-        Team Admin | Coolify
+        Team Admin
     </x-slot>
     <x-team.navbar />
     <h2>Admin View</h2>
