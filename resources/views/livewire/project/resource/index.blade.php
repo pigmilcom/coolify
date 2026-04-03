@@ -614,10 +614,10 @@
                     </span>
                 </template>
             </div>
+            @can('canAccessOwnerResources')
             <template x-if="filteredServices.length > 0">
                 <h2 class="pt-4">Services</h2>
             </template>
-            @can('canAccessOwnerResources')
             <div x-show="filteredServices.length > 0"
                 class="grid grid-cols-1 gap-4 pt-4 lg:grid-cols-2 xl:grid-cols-3">
                 <template x-for="item in filteredServices" :key="item.uuid">
