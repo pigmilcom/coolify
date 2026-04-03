@@ -77,10 +77,10 @@
                 }
             }
     }">
-    <div class="flex flex-wrap lg:pt-6 pt-4 pl-2">
+    <div class="flex flex-wrap lg:pt-6 pt-4 mb-2 pl-2">
         <div class="flex flex-col w-full mb-4">
             <a href="/" {{ wireNavigate() }} class="text-2xl font-bold tracking-wide dark:text-white hover:opacity-80 transition-opacity">
-                <img src="{{ asset('console_logo.webp') }}" alt="Console" class="h-auto w-full max-w-[70%] inline-block mr-2" /> 
+                <img src="{{ asset('console_logo.webp') }}" alt="Console" class="h-auto w-full inline-block mr-2" /> 
             </a>
             <!-- <x-version /> -->
         </div>
