@@ -32,6 +32,16 @@ class Index extends Component
 
     public int $planSortOrder = 0;
 
+    public string $planResourcesLimit = '';
+
+    public string $planProjectsLimit = '';
+
+    public string $planBandwidthLimit = '';
+
+    public string $planStorageLimit = '';
+
+    public string $planTeamMembersLimit = '';
+
     // Team plan assignment form
     public ?int $assignTeamId = null;
 
@@ -93,6 +103,11 @@ class Index extends Component
             'planFeatures' => 'nullable|string',
             'planIsActive' => 'boolean',
             'planSortOrder' => 'integer|min:0',
+            'planResourcesLimit' => 'nullable|integer|min:0',
+            'planProjectsLimit' => 'nullable|integer|min:0',
+            'planBandwidthLimit' => 'nullable|integer|min:0',
+            'planStorageLimit' => 'nullable|integer|min:0',
+            'planTeamMembersLimit' => 'nullable|integer|min:0',
         ]);
 
         $features = collect(explode("\n", $this->planFeatures))
@@ -109,6 +124,11 @@ class Index extends Component
             'features' => $features ?: null,
             'is_active' => $this->planIsActive,
             'sort_order' => $this->planSortOrder,
+            'resources_limit' => $this->planResourcesLimit !== '' ? (int) $this->planResourcesLimit : null,
+            'projects_limit' => $this->planProjectsLimit !== '' ? (int) $this->planProjectsLimit : null,
+            'bandwidth_limit' => $this->planBandwidthLimit !== '' ? (int) $this->planBandwidthLimit : null,
+            'storage_limit' => $this->planStorageLimit !== '' ? (int) $this->planStorageLimit : null,
+            'team_members_limit' => $this->planTeamMembersLimit !== '' ? (int) $this->planTeamMembersLimit : null,
         ];
 
         if ($this->editingPlanId) {
@@ -134,14 +154,19 @@ class Index extends Component
         $this->planFeatures = implode("\n", $plan->features ?? []);
         $this->planIsActive = $plan->is_active;
         $this->planSortOrder = $plan->sort_order;
+        $this->planResourcesLimit = $plan->resources_limit !== null ? (string) $plan->resources_limit : '';
+        $this->planProjectsLimit = $plan->projects_limit !== null ? (string) $plan->projects_limit : '';
+        $this->planBandwidthLimit = $plan->bandwidth_limit !== null ? (string) $plan->bandwidth_limit : '';
+        $this->planStorageLimit = $plan->storage_limit !== null ? (string) $plan->storage_limit : '';
+        $this->planTeamMembersLimit = $plan->team_members_limit !== null ? (string) $plan->team_members_limit : '';
         $this->activeTab = 'plans';
     }
 
     public function deletePlan(int $planId): void
     {
         $plan = Plan::findOrFail($planId);
-        if ($plan->teamPlans()->exists()) {
-            $this->dispatch('error', 'Cannot delete a plan that has active team assignments.');
+        if ($plan->teamPlans()->whereIn('status', ['active', 'trial'])->exists()) {
+            $this->dispatch('error', 'Cannot delete a plan that is currently active on one or more teams.');
 
             return;
         }
@@ -166,6 +191,11 @@ class Index extends Component
         $this->planFeatures = '';
         $this->planIsActive = true;
         $this->planSortOrder = 0;
+        $this->planResourcesLimit = '';
+        $this->planProjectsLimit = '';
+        $this->planBandwidthLimit = '';
+        $this->planStorageLimit = '';
+        $this->planTeamMembersLimit = '';
     }
 
     public function assignPlan(): void

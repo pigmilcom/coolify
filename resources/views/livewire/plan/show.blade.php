@@ -45,6 +45,13 @@
                                     @endforeach
                                 </ul>
                             @endif
+                            <dl class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-neutral-500 mt-3">
+                                <div><dt class="inline font-medium">Resources:</dt> <dd class="inline">{{ $currentTeamPlan->plan->resources_limit !== null ? $currentTeamPlan->plan->resources_limit : 'Unlimited' }}</dd></div>
+                                <div><dt class="inline font-medium">Projects:</dt> <dd class="inline">{{ $currentTeamPlan->plan->projects_limit !== null ? $currentTeamPlan->plan->projects_limit : 'Unlimited' }}</dd></div>
+                                <div><dt class="inline font-medium">Bandwidth:</dt> <dd class="inline">{{ $currentTeamPlan->plan->bandwidth_limit !== null ? $currentTeamPlan->plan->bandwidth_limit.' GB' : 'Unlimited' }}</dd></div>
+                                <div><dt class="inline font-medium">Storage:</dt> <dd class="inline">{{ $currentTeamPlan->plan->storage_limit !== null ? $currentTeamPlan->plan->storage_limit.' GB' : 'Unlimited' }}</dd></div>
+                                <div><dt class="inline font-medium">Team Members:</dt> <dd class="inline">{{ $currentTeamPlan->plan->team_members_limit !== null ? $currentTeamPlan->plan->team_members_limit : 'Unlimited' }}</dd></div>
+                            </dl>
                             @if ($currentTeamPlan->starts_at)
                                 <p class="text-xs text-neutral-500 mt-1">Active since {{ $currentTeamPlan->starts_at->format('M d, Y') }}</p>
                             @endif
@@ -94,6 +101,13 @@
                                     @endforeach
                                 </ul>
                             @endif
+                            <dl class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-neutral-500 mt-3">
+                                <div><dt class="inline font-medium">Resources:</dt> <dd class="inline">{{ $plan->resources_limit !== null ? $plan->resources_limit : 'Unlimited' }}</dd></div>
+                                <div><dt class="inline font-medium">Projects:</dt> <dd class="inline">{{ $plan->projects_limit !== null ? $plan->projects_limit : 'Unlimited' }}</dd></div>
+                                <div><dt class="inline font-medium">Bandwidth:</dt> <dd class="inline">{{ $plan->bandwidth_limit !== null ? $plan->bandwidth_limit.' GB' : 'Unlimited' }}</dd></div>
+                                <div><dt class="inline font-medium">Storage:</dt> <dd class="inline">{{ $plan->storage_limit !== null ? $plan->storage_limit.' GB' : 'Unlimited' }}</dd></div>
+                                <div><dt class="inline font-medium">Team Members:</dt> <dd class="inline">{{ $plan->team_members_limit !== null ? $plan->team_members_limit : 'Unlimited' }}</dd></div>
+                            </dl>
                             @if (! ($currentTeamPlan && $currentTeamPlan->plan_id === $plan->id))
                                 <p class="text-xs text-neutral-500 mt-auto pt-2">Contact the administrator to switch to this plan.</p>
                             @endif

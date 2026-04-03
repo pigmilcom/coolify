@@ -15,6 +15,11 @@ class Plan extends Model
             'features' => 'array',
             'is_active' => 'boolean',
             'price' => 'decimal:2',
+            'resources_limit' => 'integer',
+            'projects_limit' => 'integer',
+            'bandwidth_limit' => 'integer',
+            'storage_limit' => 'integer',
+            'team_members_limit' => 'integer',
         ];
     }
 

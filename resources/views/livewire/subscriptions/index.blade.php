@@ -45,6 +45,13 @@
                             @endif
                         </div>
                         <x-forms.textarea label="Features (one per line)" wire:model="planFeatures" id="planFeatures" rows="4" placeholder="Unlimited deployments&#10;Custom domains&#10;Priority support" />
+                        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                            <x-forms.input label="Resources Limit" wire:model="planResourcesLimit" id="planResourcesLimit" type="number" min="0" placeholder="Unlimited" />
+                            <x-forms.input label="Projects Limit" wire:model="planProjectsLimit" id="planProjectsLimit" type="number" min="0" placeholder="Unlimited" />
+                            <x-forms.input label="Bandwidth Limit (GB)" wire:model="planBandwidthLimit" id="planBandwidthLimit" type="number" min="0" placeholder="Unlimited" />
+                            <x-forms.input label="Storage Limit (GB)" wire:model="planStorageLimit" id="planStorageLimit" type="number" min="0" placeholder="Unlimited" />
+                            <x-forms.input label="Team Members Limit" wire:model="planTeamMembersLimit" id="planTeamMembersLimit" type="number" min="0" placeholder="Unlimited" />
+                        </div>
                         <div class="flex gap-4 items-center">
                             <x-forms.input label="Sort Order" wire:model="planSortOrder" id="planSortOrder" type="number" min="0" />
                             <div class="flex items-center gap-2 pt-6">
@@ -86,6 +93,13 @@
                                             @endforeach
                                         </ul>
                                     @endif
+                                    <dl class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-neutral-500 mt-2">
+                                        <div><dt class="inline font-medium">Resources:</dt> <dd class="inline">{{ $plan->resources_limit !== null ? $plan->resources_limit : 'Unlimited' }}</dd></div>
+                                        <div><dt class="inline font-medium">Projects:</dt> <dd class="inline">{{ $plan->projects_limit !== null ? $plan->projects_limit : 'Unlimited' }}</dd></div>
+                                        <div><dt class="inline font-medium">Bandwidth:</dt> <dd class="inline">{{ $plan->bandwidth_limit !== null ? $plan->bandwidth_limit.' GB' : 'Unlimited' }}</dd></div>
+                                        <div><dt class="inline font-medium">Storage:</dt> <dd class="inline">{{ $plan->storage_limit !== null ? $plan->storage_limit.' GB' : 'Unlimited' }}</dd></div>
+                                        <div><dt class="inline font-medium">Team Members:</dt> <dd class="inline">{{ $plan->team_members_limit !== null ? $plan->team_members_limit : 'Unlimited' }}</dd></div>
+                                    </dl>
                                 </div>
                                 <div class="flex gap-2 shrink-0">
                                     <x-forms.button wire:click="editPlan({{ $plan->id }})" class="btn btn-xs">Edit</x-forms.button>
