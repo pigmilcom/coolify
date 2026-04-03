@@ -39,10 +39,16 @@ class Index extends Component
 
     public array $parameters;
 
+    public bool $isOwner = false;
+
+    public array $planUsage = [];
+
     public function mount()
     {
         $this->applications = $this->postgresqls = $this->redis = $this->mongodbs = $this->mysqls = $this->mariadbs = $this->keydbs = $this->dragonflies = $this->clickhouses = $this->services = collect();
         $this->parameters = get_route_parameters();
+        $this->isOwner = auth()->user()->isOwner();
+        $this->planUsage = currentTeam()->planUsage();
         $project = currentTeam()
             ->projects()
             ->select('id', 'uuid', 'team_id', 'name')

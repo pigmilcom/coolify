@@ -2,6 +2,10 @@
     <x-slot:title>
         {{ data_get_str($project, 'name')->limit(10) }} > Resources
     </x-slot>
+    @php
+        $resourcesLimit = $planUsage['plan']?->resources_limit;
+        $atResourcesLimit = $resourcesLimit !== null && $planUsage['resources_count'] >= $resourcesLimit;
+    @endphp
     <div class="flex flex-col">
         <div class="flex min-w-0 flex-nowrap items-center gap-1">
             <h1>Resources</h1>
@@ -14,9 +18,11 @@
                 @endcan
             @else
                 @can('createAnyResource')
-                    <a href="{{ route('project.resource.create', ['project_uuid' => data_get($parameters, 'project_uuid'), 'environment_uuid' => data_get($environment, 'uuid')]) }}"
-                        {{ wireNavigate() }} class="button">+
-                        New</a>
+                    @if (! $atResourcesLimit)
+                        <a href="{{ route('project.resource.create', ['project_uuid' => data_get($parameters, 'project_uuid'), 'environment_uuid' => data_get($environment, 'uuid')]) }}"
+                            {{ wireNavigate() }} class="button">+
+                            New</a>
+                    @endif
                 @endcan
                 @can('createAnyResource')
                     <a class="button" {{ wireNavigate() }}
@@ -453,8 +459,25 @@
     </div>
     @if ($environment->isEmpty())
         @can('createAnyResource')
-            <a href="{{ route('project.resource.create', ['project_uuid' => data_get($parameters, 'project_uuid'), 'environment_uuid' => data_get($environment, 'uuid')]) }}"
-                {{ wireNavigate() }} class="items-center justify-center coolbox">+ Add Resource</a>
+            @if ($atResourcesLimit)
+                <div class="mb-4 p-4 bg-warning/10 border border-warning rounded-lg flex items-center gap-3">
+                    <svg class="size-4 text-warning shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                    </svg>
+                    <p class="text-sm text-warning font-medium">
+                        You've reached your plan's resource limit of {{ $resourcesLimit }}.
+                        @can('canAccessPlan')
+                            <a href="{{ route('plan.show') }}" {{ wireNavigate() }} class="underline hover:opacity-80">Upgrade your plan</a> to add more resources.
+                        @endcan
+                        @can('canAccessOwnerResources')
+                            <a href="{{ route('subscriptions.index') }}" {{ wireNavigate() }} class="underline hover:opacity-80">Upgrade your plan</a> to add more resources.
+                        @endcan
+                    </p>
+                </div>
+            @else
+                <a href="{{ route('project.resource.create', ['project_uuid' => data_get($parameters, 'project_uuid'), 'environment_uuid' => data_get($environment, 'uuid')]) }}"
+                    {{ wireNavigate() }} class="items-center justify-center coolbox">+ Add Resource</a>
+            @endif
         @else
             <div
                 class="flex flex-col items-center justify-center p-8 text-center border border-dashed border-neutral-300 dark:border-coolgray-300 rounded-lg">
@@ -594,6 +617,7 @@
             <template x-if="filteredServices.length > 0">
                 <h2 class="pt-4">Services</h2>
             </template>
+            @can('canAccessOwnerResources')
             <div x-show="filteredServices.length > 0"
                 class="grid grid-cols-1 gap-4 pt-4 lg:grid-cols-2 xl:grid-cols-3">
                 <template x-for="item in filteredServices" :key="item.uuid">
@@ -643,6 +667,7 @@
                     </span>
                 </template>
             </div>
+            @endcan
         </div>
     @endif
 
@@ -665,7 +690,7 @@
             keydbs: @js($keydbs),
             dragonflies: @js($dragonflies),
             clickhouses: @js($clickhouses),
-            services: @js($services),
+            services: @can('canAccessOwnerResources') @js($services) @else([]) @endcan,
             filterAndSort(items) {
                 if (this.search === '') {
                     return Object.values(items).sort(sortFn);

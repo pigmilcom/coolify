@@ -15,11 +15,14 @@ class Index extends Component
 
     public $private_keys;
 
+    public array $planUsage = [];
+
     public function mount()
     {
         $this->private_keys = PrivateKey::ownedByCurrentTeamCached();
         $this->projects = Project::ownedByCurrentTeamCached();
         $this->servers = Server::ownedByCurrentTeamCached();
+        $this->planUsage = currentTeam()->planUsage();
     }
 
     public function render()

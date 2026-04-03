@@ -242,6 +242,42 @@ class Team extends Model implements SendsDiscord, SendsEmail, SendsPushover, Sen
         return $this->hasMany(PaymentHistory::class);
     }
 
+    public function totalResourcesCount(): int
+    {
+        $envIds = Environment::whereIn('project_id', $this->projects()->select('id'))->pluck('id');
+
+        if ($envIds->isEmpty()) {
+            return 0;
+        }
+
+        return Application::whereIn('environment_id', $envIds)->count()
+            + StandalonePostgresql::whereIn('environment_id', $envIds)->count()
+            + StandaloneRedis::whereIn('environment_id', $envIds)->count()
+            + StandaloneMongodb::whereIn('environment_id', $envIds)->count()
+            + StandaloneMysql::whereIn('environment_id', $envIds)->count()
+            + StandaloneMariadb::whereIn('environment_id', $envIds)->count()
+            + StandaloneKeydb::whereIn('environment_id', $envIds)->count()
+            + StandaloneDragonfly::whereIn('environment_id', $envIds)->count()
+            + StandaloneClickhouse::whereIn('environment_id', $envIds)->count()
+            + Service::whereIn('environment_id', $envIds)->count();
+    }
+
+    /**
+     * @return array{team_plan: TeamPlan|null, plan: Plan|null, projects_count: int, resources_count: int, team_members_count: int}
+     */
+    public function planUsage(): array
+    {
+        $currentTeamPlan = $this->currentTeamPlan()->with('plan')->first();
+
+        return [
+            'team_plan' => $currentTeamPlan,
+            'plan' => $currentTeamPlan?->plan,
+            'projects_count' => $this->projects()->count(),
+            'resources_count' => $this->totalResourcesCount(),
+            'team_members_count' => $this->members()->count(),
+        ];
+    }
+
     public function applications()
     {
         return $this->hasManyThrough(Application::class, Project::class);
