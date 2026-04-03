@@ -47,7 +47,7 @@
         <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
             <div class="w-full max-w-md space-y-8">
                 <div class="text-center space-y-2">
-                    <img src="{{ asset('console_logo.webp') }}" alt="Console" class="mx-auto h-32 w-auto max-w-full mb-2" />
+                    <img src="{{ asset('console_icon.webp') }}" alt="Console" class="mx-auto h-32 w-auto max-w-full mb-2" />
                     <h1 class="text-2xl! font-extrabold tracking-tight text-gray-900 dark:text-white">
                             Two-Factor Authentication
                     </h1> 

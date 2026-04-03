@@ -77,14 +77,14 @@
                 }
             }
     }">
-    <div class="flex flex-wrap lg:pt-6 pt-4 mb-2 pl-2">
-        <div class="flex flex-col w-full mb-4">
+    <div class="flex flex-nowrap lg:pt-6 pt-4 mb-2 pl-2">
+        <div class="flex flex-col w-full mb-4 grow">
             <a href="/" {{ wireNavigate() }} class="text-2xl font-bold tracking-wide dark:text-white hover:opacity-80 transition-opacity">
-                <img src="{{ asset('console_logo.webp') }}" alt="Console" class="h-auto w-full inline-block mr-2" /> 
+                <img src="{{ asset('console_icon.webp') }}" alt="Console" class="h-8 w-auto inline-block mr-2" /> 
             </a>
             <!-- <x-version /> -->
         </div>
-        <div class="w-full flex items-center gap-2">
+        <div class="w-full flex flex-nowrap items-center gap-2">
             <!-- Search button that triggers global search modal -->
             <button @click="$dispatch('open-global-search')" type="button" title="Search (Press / or ⌘K)"
                 class="flex grow items-center gap-1.5 px-2.5 py-1.5 bg-neutral-100 dark:bg-coolgray-100 border border-neutral-300 dark:border-coolgray-200 rounded-md hover:bg-neutral-200 dark:hover:bg-coolgray-200 transition-colors">
