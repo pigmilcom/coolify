@@ -77,6 +77,8 @@ use App\Livewire\Storage\Index as StorageIndex;
 use App\Livewire\Storage\Show as StorageShow;
 use App\Livewire\Subscription\Index as SubscriptionIndex;
 use App\Livewire\Subscription\Show as SubscriptionShow;
+use App\Livewire\Subscriptions\Index as SubscriptionsIndex;
+use App\Livewire\Plan\Show as PlanShow;
 use App\Livewire\Tags\Show as TagsShow;
 use App\Livewire\Team\AdminView as TeamAdminView;
 use App\Livewire\Team\Index as TeamIndex;
@@ -112,17 +114,26 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/subscription', SubscriptionShow::class)->name('subscription.show');
     Route::get('/subscription/new', SubscriptionIndex::class)->name('subscription.index');
 
-    Route::get('/settings', SettingsIndex::class)->name('settings.index');
-    Route::get('/settings/advanced', SettingsAdvanced::class)->name('settings.advanced');
-    Route::get('/settings/updates', SettingsUpdates::class)->name('settings.updates');
+    Route::middleware(['can.access.owner.resources'])->group(function () {
+        Route::get('/subscriptions', SubscriptionsIndex::class)->name('subscriptions.index');
+    });
 
-    Route::get('/settings/backup', SettingsBackup::class)->name('settings.backup');
-    Route::get('/settings/email', SettingsEmail::class)->name('settings.email');
-    Route::get('/settings/oauth', SettingsOauth::class)->name('settings.oauth');
+    Route::middleware(['can.access.plan'])->group(function () {
+        Route::get('/plan', PlanShow::class)->name('plan.show');
+    });
+
+    Route::middleware(['can.access.owner.resources'])->group(function () {
+        Route::get('/settings', SettingsIndex::class)->name('settings.index');
+        Route::get('/settings/advanced', SettingsAdvanced::class)->name('settings.advanced');
+        Route::get('/settings/updates', SettingsUpdates::class)->name('settings.updates');
+        Route::get('/settings/backup', SettingsBackup::class)->name('settings.backup');
+        Route::get('/settings/email', SettingsEmail::class)->name('settings.email');
+        Route::get('/settings/oauth', SettingsOauth::class)->name('settings.oauth');
+    });
 
     Route::get('/profile', ProfileIndex::class)->name('profile');
 
-    Route::prefix('tags')->group(function () {
+    Route::prefix('tags')->middleware(['can.access.owner.resources'])->group(function () {
         Route::get('/{tagName?}', TagsShow::class)->name('tags.show');
     });
 
@@ -276,8 +287,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/security/patches', Patches::class)->name('server.security.patches')->middleware('can.update.resource');
         Route::get('/security/terminal-access', TerminalAccess::class)->name('server.security.terminal-access')->middleware('can.update.resource');
     });
-    Route::get('/destinations', DestinationIndex::class)->name('destination.index');
-    Route::get('/destination/{destination_uuid}', DestinationShow::class)->name('destination.show');
+    Route::middleware(['can.access.owner.resources'])->group(function () {
+        Route::get('/destinations', DestinationIndex::class)->name('destination.index');
+        Route::get('/destination/{destination_uuid}', DestinationShow::class)->name('destination.show');
+    });
 
     // Route::get('/security', fn () => view('security.index'))->name('security.index');
     Route::get('/security/private-key', SecurityPrivateKeyIndex::class)->name('security.private-key.index');

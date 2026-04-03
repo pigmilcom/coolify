@@ -161,6 +161,7 @@
                             <span class="menu-item-label">Sources</span>
                         </a>
                     </li>
+                    @can('canAccessOwnerResources')
                     <li>
                         <a title="Destinations" {{ wireNavigate() }}
                             class="{{ request()->is('destination*') ? 'menu-item-active menu-item' : 'menu-item' }}"
@@ -174,6 +175,7 @@
                             <span class="menu-item-label">Destinations</span>
                         </a>
                     </li>
+                    @endcan
                     <li>
                         <a title="S3 Storages" {{ wireNavigate() }}
                             class="{{ request()->is('storages*') ? 'menu-item-active menu-item' : 'menu-item' }}"
@@ -228,6 +230,7 @@
                             <span class="menu-item-label">Keys & Tokens</span>
                         </a>
                     </li>
+                    @can('canAccessOwnerResources')
                     <li>
                         <a title="Tags" {{ wireNavigate() }}
                             class="{{ request()->is('tags*') ? 'menu-item-active menu-item' : 'menu-item' }}"
@@ -243,6 +246,7 @@
                             <span class="menu-item-label">Tags</span>
                         </a>
                     </li>
+                    @endcan
                     @can('canAccessTerminal')
                         <li>
                             <a title="Terminal"
@@ -306,9 +310,36 @@
                             </a>
                         </li>
                     @endif
-                    @if (isInstanceAdmin())
+                    @can('canAccessOwnerResources')
                         <li>
-
+                            <a title="Subscriptions" {{ wireNavigate() }}
+                                class="{{ request()->is('subscriptions*') ? 'menu-item-active menu-item' : 'menu-item' }}"
+                                href="{{ route('subscriptions.index') }}">
+                                <svg class="menu-item-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <path fill="none" stroke="currentColor" stroke-linecap="round"
+                                        stroke-linejoin="round" stroke-width="2"
+                                        d="M3 8a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3zm0 2h18M7 15h.01M11 15h2" />
+                                </svg>
+                                <span class="menu-item-label">Subscriptions</span>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('canAccessPlan')
+                        <li>
+                            <a title="Plan" {{ wireNavigate() }}
+                                class="{{ request()->is('plan*') ? 'menu-item-active menu-item' : 'menu-item' }}"
+                                href="{{ route('plan.show') }}">
+                                <svg class="menu-item-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                                    <path fill="none" stroke="currentColor" stroke-linecap="round"
+                                        stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9l2 2 4-4" />
+                                </svg>
+                                <span class="menu-item-label">Plan</span>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('canAccessOwnerResources')
+                        <li>
                             <a title="Settings" {{ wireNavigate() }}
                                 class="{{ request()->is('settings*') ? 'menu-item-active menu-item' : 'menu-item' }}"
                                 href="/settings">
@@ -320,10 +351,10 @@
                                         d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z" />
                                     <path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" />
                                 </svg>
-                                <span class="menu-item-label">Settings</span>
+                                    <span class="menu-item-label">Settings</span>
                             </a>
                         </li>
-                    @endif
+                    @endcan
 
                     @if (isCloud() || isDev())
                         @if (isInstanceAdmin() || session('impersonating'))

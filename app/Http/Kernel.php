@@ -75,5 +75,7 @@ class Kernel extends HttpKernel
         'can.update.resource' => \App\Http\Middleware\CanUpdateResource::class,
         'can.access.terminal' => \App\Http\Middleware\CanAccessTerminal::class,
         'can.access.servers' => \App\Http\Middleware\CanAccessServers::class,
+        'can.access.owner.resources' => \App\Http\Middleware\CanAccessOwnerResources::class,
+        'can.access.plan' => \App\Http\Middleware\CanAccessPlan::class,
     ];
 }

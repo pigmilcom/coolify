@@ -227,6 +227,21 @@ class Team extends Model implements SendsDiscord, SendsEmail, SendsPushover, Sen
         return $this->hasOne(Subscription::class);
     }
 
+    public function teamPlans()
+    {
+        return $this->hasMany(TeamPlan::class);
+    }
+
+    public function currentTeamPlan()
+    {
+        return $this->hasOne(TeamPlan::class)->whereIn('status', ['active', 'trial'])->latest();
+    }
+
+    public function paymentHistories()
+    {
+        return $this->hasMany(PaymentHistory::class);
+    }
+
     public function applications()
     {
         return $this->hasManyThrough(Application::class, Project::class);

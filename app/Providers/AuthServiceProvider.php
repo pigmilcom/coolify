@@ -78,5 +78,15 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('canAccessServers', function ($user) {
             return $user->isOwner();
         });
+
+        // Register gate for owner-only resources (destinations, tags, settings)
+        Gate::define('canAccessOwnerResources', function ($user) {
+            return $user->isOwner();
+        });
+
+        // Register gate for plan page access (admin role only, not owner)
+        Gate::define('canAccessPlan', function ($user) {
+            return $user->isAdmin() && ! $user->isOwner();
+        });
     }
 }

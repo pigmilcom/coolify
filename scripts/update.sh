@@ -116,7 +116,20 @@ echo "[5/7] Rebuilding and restarting services (data-safe)..."
 compose_cmd up -d --build --pull always coolify postgres redis soketi
 
 echo "[6/7] Running database migrations..."
-docker exec coolify php artisan migrate --force
+MAX_CONTAINER_WAIT=60
+CONTAINER_WAITED=0
+until docker exec coolify php artisan migrate --force 2>/dev/null; do
+    CONTAINER_STATE=$(docker inspect --format='{{.State.Status}}' coolify 2>/dev/null || echo "missing")
+    if [ "$CONTAINER_WAITED" -ge "$MAX_CONTAINER_WAIT" ]; then
+        echo "ERROR: Could not run migrations after ${MAX_CONTAINER_WAIT}s (container state: $CONTAINER_STATE)."
+        echo "Check logs: docker logs coolify"
+        exit 1
+    fi
+    echo " - Waiting for coolify container to accept commands... (state: $CONTAINER_STATE, ${CONTAINER_WAITED}s)"
+    sleep 3
+    CONTAINER_WAITED=$((CONTAINER_WAITED + 3))
+done
+echo " - Migrations completed."
 
 echo "[7/7] Waiting for app health..."
 MAX_WAIT=180
