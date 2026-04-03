@@ -47,7 +47,7 @@
             </div>
 
             <div
-                class="sticky top-0 z-40 flex items-center justify-between px-4 py-4 gap-x-6 sm:px-6 lg:hidden bg-white/95 dark:bg-base/95 backdrop-blur-sm border-b border-neutral-300/50 dark:border-coolgray-200/50">
+                class="sticky top-0 z-40 flex items-center justify-between px-4 py-4 gap-x-4 sm:px-6 lg:hidden bg-white/95 dark:bg-base/95 backdrop-blur-sm border-b border-neutral-300/50 dark:border-coolgray-200/50">
                 
                 <button type="button" class="-m-2.5 p-2.5 dark:text-warning" x-on:click="open = !open">
                     <span class="sr-only">Open sidebar</span>
@@ -56,9 +56,7 @@
                             stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
                 </button>
-                <div class="flex items-center gap-3 shrink-0 mr-auto">
-                    <a href="/"
-                        class="text-xl font-bold tracking-wide dark:text-white hover:opacity-80 transition-opacity">Console</a>
+                <div class="flex items-center gap-3 shrink-0 mr-auto"> 
                     <livewire:switch-team />
                 </div>
             </div>

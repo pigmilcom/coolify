@@ -77,12 +77,14 @@
                 }
             }
     }">
-    <div class="flex lg:pt-6 pt-4 pb-4 pl-2">
+    <div class="flex flex-wrap lg:pt-6 pt-4 pb-4 pl-2">
         <div class="flex flex-col w-full">
-            <a href="/" {{ wireNavigate() }} class="text-2xl font-bold tracking-wide dark:text-white hover:opacity-80 transition-opacity">Console</a>
-            <x-version />
+            <a href="/" {{ wireNavigate() }} class="text-2xl font-bold tracking-wide dark:text-white hover:opacity-80 transition-opacity">
+                <img src="{{ asset('console_logo.webp') }}" alt="Console" class="h-8 w-auto inline-block mr-2" /> 
+            </a>
+            <!-- <x-version /> -->
         </div>
-        <div>
+        <div class="flex items-center gap-2 ml-auto">
             <!-- Search button that triggers global search modal -->
             <button @click="$dispatch('open-global-search')" type="button" title="Search (Press / or ⌘K)"
                 class="flex items-center gap-1.5 px-2.5 py-1.5 bg-neutral-100 dark:bg-coolgray-100 border border-neutral-300 dark:border-coolgray-200 rounded-md hover:bg-neutral-200 dark:hover:bg-coolgray-200 transition-colors">
@@ -94,8 +96,8 @@
                 <kbd
                     class="px-1 py-0.5 text-xs font-semibold text-neutral-500 dark:text-neutral-400 bg-neutral-200 dark:bg-coolgray-200 rounded">/</kbd>
             </button>
+            <livewire:settings-dropdown />
         </div>
-        <livewire:settings-dropdown />
     </div>
     <div class="px-2 pt-2 pb-7">
         <livewire:switch-team />
