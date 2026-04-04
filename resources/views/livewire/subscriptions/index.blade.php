@@ -12,31 +12,31 @@
 
     <div x-data="{ tab: @entangle('activeTab') }" class="flex flex-col gap-6">
         {{-- Tab Navigation --}}
-        <div class="flex gap-1 border-b dark:border-coolgray-200">
-            <button @click="tab = 'plans'" :class="tab === 'plans' && 'border-b-2 border-coollabs dark:border-coollabs font-semibold'" class="px-4 py-2 text-sm transition-colors">
+        <div class="flex gap-1 border-b dark:border-coolgray-200 overflow-x-auto scrollbar">
+            <button @click="tab = 'plans'" :class="tab === 'plans' && 'border-b-2 border-coollabs dark:border-coollabs font-semibold'" class="px-4 py-2 text-sm transition-colors whitespace-nowrap shrink-0">
                 Plans
             </button>
-            <button @click="tab = 'users'" :class="tab === 'users' && 'border-b-2 border-coollabs dark:border-coollabs font-semibold'" class="px-4 py-2 text-sm transition-colors">
+            <button @click="tab = 'users'" :class="tab === 'users' && 'border-b-2 border-coollabs dark:border-coollabs font-semibold'" class="px-4 py-2 text-sm transition-colors whitespace-nowrap shrink-0">
                 Team Subscriptions
             </button>
-            <button @click="tab = 'payments'" :class="tab === 'payments' && 'border-b-2 border-coollabs dark:border-coollabs font-semibold'" class="px-4 py-2 text-sm transition-colors">
+            <button @click="tab = 'payments'" :class="tab === 'payments' && 'border-b-2 border-coollabs dark:border-coollabs font-semibold'" class="px-4 py-2 text-sm transition-colors whitespace-nowrap shrink-0">
                 Payment History
             </button>
-            <button @click="tab = 'api'" :class="tab === 'api' && 'border-b-2 border-coollabs dark:border-coollabs font-semibold'" class="px-4 py-2 text-sm transition-colors">
+            <button @click="tab = 'api'" :class="tab === 'api' && 'border-b-2 border-coollabs dark:border-coollabs font-semibold'" class="px-4 py-2 text-sm transition-colors whitespace-nowrap shrink-0">
                 API Access
             </button>
         </div>
 
         {{-- Plans Tab --}}
         <div x-show="tab === 'plans'">
-            <div class="grid gap-6 xl:grid-cols-2">
+            <div class="grid gap-6 lg:grid-cols-2">
                 {{-- Plan Form --}}
                 <div class="coolbox">
                     <h3 class="pb-4">{{ $editingPlanId ? 'Edit Plan' : 'New Plan' }}</h3>
                     <div class="flex flex-col gap-3">
                         <x-forms.input label="Name" wire:model="planName" id="planName" placeholder="e.g. Pro, Enterprise" required />
                         <x-forms.textarea label="Description" wire:model="planDescription" id="planDescription" rows="2" placeholder="Short description of this plan" />
-                        <div class="grid grid-cols-2 gap-3">
+                        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
                             <x-forms.select label="Billing Cycle" wire:model.live="planBillingCycle" id="planBillingCycle">
                                 <option value="free">Free</option>
                                 <option value="monthly">Monthly</option>
@@ -48,14 +48,14 @@
                             @endif
                         </div>
                         <x-forms.textarea label="Features (one per line)" wire:model="planFeatures" id="planFeatures" rows="4" placeholder="Unlimited deployments&#10;Custom domains&#10;Priority support" />
-                        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                             <x-forms.input label="Resources Limit" wire:model="planResourcesLimit" id="planResourcesLimit" type="number" min="0" placeholder="Unlimited" />
                             <x-forms.input label="Projects Limit" wire:model="planProjectsLimit" id="planProjectsLimit" type="number" min="0" placeholder="Unlimited" />
                             <x-forms.input label="Bandwidth Limit (GB)" wire:model="planBandwidthLimit" id="planBandwidthLimit" type="number" min="0" placeholder="Unlimited" />
                             <x-forms.input label="Storage Limit (GB)" wire:model="planStorageLimit" id="planStorageLimit" type="number" min="0" placeholder="Unlimited" />
                             <x-forms.input label="Team Members Limit" wire:model="planTeamMembersLimit" id="planTeamMembersLimit" type="number" min="0" placeholder="Unlimited" />
                         </div>
-                        <div class="flex gap-4 items-center">
+                        <div class="flex flex-wrap gap-4 items-center">
                             <x-forms.input label="Sort Order" wire:model="planSortOrder" id="planSortOrder" type="number" min="0" />
                             <div class="flex items-center gap-2 pt-6">
                                 <input type="checkbox" wire:model="planIsActive" id="planIsActive" class="checkbox">
@@ -96,7 +96,7 @@
                                             @endforeach
                                         </ul>
                                     @endif
-                                    <dl class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-neutral-500 mt-2">
+                                    <dl class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-neutral-500 mt-2 sm:grid-cols-3">
                                         <div><dt class="inline font-medium">Resources:</dt> <dd class="inline">{{ $plan->resources_limit !== null ? $plan->resources_limit : 'Unlimited' }}</dd></div>
                                         <div><dt class="inline font-medium">Projects:</dt> <dd class="inline">{{ $plan->projects_limit !== null ? $plan->projects_limit : 'Unlimited' }}</dd></div>
                                         <div><dt class="inline font-medium">Bandwidth:</dt> <dd class="inline">{{ $plan->bandwidth_limit !== null ? $plan->bandwidth_limit.' GB' : 'Unlimited' }}</dd></div>
@@ -104,7 +104,7 @@
                                         <div><dt class="inline font-medium">Team Members:</dt> <dd class="inline">{{ $plan->team_members_limit !== null ? $plan->team_members_limit : 'Unlimited' }}</dd></div>
                                     </dl>
                                 </div>
-                                <div class="flex gap-2 shrink-0">
+                                <div class="flex flex-col gap-2 shrink-0 sm:flex-row">
                                     <x-forms.button wire:click="editPlan({{ $plan->id }})" class="btn btn-xs">Edit</x-forms.button>
                                     <x-modal-confirmation title="Delete Plan?" isHighlighted buttonTitle="Delete"
                                         submitAction="deletePlan({{ $plan->id }})"
@@ -126,7 +126,7 @@
 
         {{-- Team Subscriptions Tab --}}
         <div x-show="tab === 'users'">
-            <div class="grid gap-6 xl:grid-cols-2">
+            <div class="grid gap-6 lg:grid-cols-2">
                 {{-- Assign Form --}}
                 <div class="coolbox">
                     <h3 class="pb-4">Assign Plan to Team</h3>
@@ -268,7 +268,7 @@ Content-Type: application/json</pre>
                 </div>
 
                 {{-- Request Bodies --}}
-                <div class="grid gap-4 xl:grid-cols-2">
+                <div class="grid gap-4 sm:grid-cols-2">
                     <div class="coolbox">
                         <h4 class="pb-3 font-semibold">POST /users</h4>
                         <pre class="text-xs bg-neutral-100 dark:bg-coolgray-300 rounded p-3 overflow-x-auto">{
@@ -393,7 +393,7 @@ Content-Type: application/json</pre>
 
         {{-- Payment History Tab --}}
         <div x-show="tab === 'payments'">
-            <div class="grid gap-6 xl:grid-cols-2">
+            <div class="grid gap-6 lg:grid-cols-2">
                 {{-- Payment Form --}}
                 <div class="coolbox">
                     <h3 class="pb-4">Record Payment</h3>
@@ -412,7 +412,7 @@ Content-Type: application/json</pre>
                                 @endforeach
                             </x-forms.select>
                         @endif
-                        <div class="grid grid-cols-2 gap-3">
+                        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
                             <x-forms.input label="Amount" wire:model="paymentAmount" id="paymentAmount" type="number" min="0" step="0.01" placeholder="0.00" required />
                             <x-forms.input label="Currency" wire:model="paymentCurrency" id="paymentCurrency" placeholder="USD" maxlength="3" />
                         </div>

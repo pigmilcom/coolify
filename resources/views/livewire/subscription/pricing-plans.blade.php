@@ -1,5 +1,5 @@
-<div x-data="{ selected: 'monthly' }" class="w-full pb-20">
-    <div class="px-6 mx-auto lg:px-8">
+<div x-data="{ selected: 'monthly' }" class="w-full pb-10 sm:pb-20">
+    <div class="px-2 mx-auto sm:px-6 lg:px-8">
         <div class="flex justify-center">
             <fieldset
                 class="grid grid-cols-2 p-1 text-xs font-semibold leading-5 text-center rounded-sm dark:text-white gap-x-1 dark:bg-white/5 bg-black/5">
@@ -27,7 +27,7 @@
             <div
                 class="grid grid-cols-1 -mt-16 divide-y divide-neutral-200 dark:divide-coolgray-500 isolate gap-y-16 sm:mx-auto lg:-mx-8 lg:mt-0 lg:max-w-none lg:grid-cols-1 lg:divide-x lg:divide-y-0 xl:-mx-4">
                 <div class="pt-16 lg:px-8 lg:pt-0 xl:px-14">
-                    <h3 id="tier-dynamic" class="text-4xl font-semibold leading-7 dark:text-white">Pay-as-you-go</h3>
+                    <h3 id="tier-dynamic" class="text-2xl font-semibold leading-7 dark:text-white sm:text-4xl">Pay-as-you-go</h3>
                     <p class="mt-4 text-sm leading-6 dark:text-neutral-400">
                         Dynamic pricing based on the number of servers you connect.
                     </p>
@@ -77,7 +77,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="flex pt-4 h-14">
+                    <div class="flex pt-4 h-auto sm:h-14">
                         <x-forms.button x-show="selected === 'monthly'" x-cloak aria-describedby="tier-basic"
                             class="w-full" wire:click="subscribeStripe('dynamic-monthly')">
                             Subscribe
