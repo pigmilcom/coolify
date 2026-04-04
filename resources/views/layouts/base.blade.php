@@ -43,7 +43,7 @@
             }
         }
     @endphp
-    <title>@isset($title){{ $title }} | @endisset | PIGMIL Console</title>
+    <title>@isset($title){{ $title }} | @endisset PIGMIL Console</title>
     @env('local')
         <link rel="icon" href="{{ asset('cpm-logo-dev-transparent.png') }}" type="image/png" />
     @else
