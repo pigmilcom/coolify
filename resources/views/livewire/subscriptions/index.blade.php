@@ -22,6 +22,9 @@
             <button @click="tab = 'payments'" :class="tab === 'payments' && 'border-b-2 border-coollabs dark:border-coollabs font-semibold'" class="px-4 py-2 text-sm transition-colors">
                 Payment History
             </button>
+            <button @click="tab = 'api'" :class="tab === 'api' && 'border-b-2 border-coollabs dark:border-coollabs font-semibold'" class="px-4 py-2 text-sm transition-colors">
+                API Access
+            </button>
         </div>
 
         {{-- Plans Tab --}}
@@ -188,6 +191,177 @@
                     @empty
                         <div class="coolbox text-neutral-500">No team plan assignments yet.</div>
                     @endforelse
+                </div>
+            </div>
+        </div>
+
+        {{-- API Access Tab --}}
+        <div x-show="tab === 'api'">
+            <div class="flex flex-col gap-6">
+                {{-- Authentication --}}
+                <div class="coolbox">
+                    <h3 class="pb-1">Authentication</h3>
+                    <p class="text-sm text-neutral-500 pb-4">All requests require a Sanctum API token with <code class="text-xs bg-neutral-100 dark:bg-coolgray-300 px-1.5 py-0.5 rounded">write</code> ability (or <code class="text-xs bg-neutral-100 dark:bg-coolgray-300 px-1.5 py-0.5 rounded">root</code>) passed as a Bearer token. GET endpoints require <code class="text-xs bg-neutral-100 dark:bg-coolgray-300 px-1.5 py-0.5 rounded">read</code> or <code class="text-xs bg-neutral-100 dark:bg-coolgray-300 px-1.5 py-0.5 rounded">root</code>.</p>
+                    <pre class="text-xs bg-neutral-100 dark:bg-coolgray-300 rounded p-3 overflow-x-auto">Authorization: Bearer &lt;your-api-token&gt;
+Content-Type: application/json</pre>
+                </div>
+
+                {{-- Endpoints Table --}}
+                <div class="coolbox overflow-x-auto">
+                    <h3 class="pb-4">Endpoints</h3>
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b dark:border-coolgray-200 text-left text-xs text-neutral-500 uppercase tracking-wide">
+                                <th class="pb-2 pr-4 font-medium">Method</th>
+                                <th class="pb-2 pr-4 font-medium">Endpoint</th>
+                                <th class="pb-2 font-medium">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y dark:divide-coolgray-200">
+                            <tr>
+                                <td class="py-3 pr-4"><span class="text-xs font-semibold px-2 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">POST</span></td>
+                                <td class="py-3 pr-4 font-mono text-xs">/api/v1/subscription/users</td>
+                                <td class="py-3 text-neutral-500">Create a new user</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 pr-4"><span class="text-xs font-semibold px-2 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">POST</span></td>
+                                <td class="py-3 pr-4 font-mono text-xs">/api/v1/subscription/teams</td>
+                                <td class="py-3 text-neutral-500">Create a new team (optionally assign owner)</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 pr-4"><span class="text-xs font-semibold px-2 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">POST</span></td>
+                                <td class="py-3 pr-4 font-mono text-xs">/api/v1/subscription/teams/{team_id}/members</td>
+                                <td class="py-3 text-neutral-500">Add or update a user's role in a team</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 pr-4"><span class="text-xs font-semibold px-2 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">POST</span></td>
+                                <td class="py-3 pr-4 font-mono text-xs">/api/v1/subscription/plans</td>
+                                <td class="py-3 text-neutral-500">Create a new plan (with all limit fields)</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 pr-4"><span class="text-xs font-semibold px-2 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">POST</span></td>
+                                <td class="py-3 pr-4 font-mono text-xs">/api/v1/subscription/assign</td>
+                                <td class="py-3 text-neutral-500">Assign a plan to a team (cancels existing active/trial first)</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 pr-4"><span class="text-xs font-semibold px-2 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">POST</span></td>
+                                <td class="py-3 pr-4 font-mono text-xs">/api/v1/subscription/cancel</td>
+                                <td class="py-3 text-neutral-500">Cancel a team's active subscription</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 pr-4"><span class="text-xs font-semibold px-2 py-0.5 rounded bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">POST</span></td>
+                                <td class="py-3 pr-4 font-mono text-xs">/api/v1/subscription/payments</td>
+                                <td class="py-3 text-neutral-500">Record a payment</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 pr-4"><span class="text-xs font-semibold px-2 py-0.5 rounded bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">GET</span></td>
+                                <td class="py-3 pr-4 font-mono text-xs">/api/v1/subscription/teams/{team_id}/status</td>
+                                <td class="py-3 text-neutral-500">Get team subscription &amp; usage stats</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                {{-- Request Bodies --}}
+                <div class="grid gap-4 xl:grid-cols-2">
+                    <div class="coolbox">
+                        <h4 class="pb-3 font-semibold">POST /users</h4>
+                        <pre class="text-xs bg-neutral-100 dark:bg-coolgray-300 rounded p-3 overflow-x-auto">{
+  "name": "Jane Doe",         // required
+  "email": "jane@example.com", // required
+  "password": "secret",        // required
+  "role": "admin"              // optional (default: member)
+}</pre>
+                    </div>
+                    <div class="coolbox">
+                        <h4 class="pb-3 font-semibold">POST /teams</h4>
+                        <pre class="text-xs bg-neutral-100 dark:bg-coolgray-300 rounded p-3 overflow-x-auto">{
+  "name": "Acme Corp",         // required
+  "description": "...",        // optional
+  "owner_id": 42               // optional — attach existing user as owner
+}</pre>
+                    </div>
+                    <div class="coolbox">
+                        <h4 class="pb-3 font-semibold">POST /teams/{team_id}/members</h4>
+                        <pre class="text-xs bg-neutral-100 dark:bg-coolgray-300 rounded p-3 overflow-x-auto">{
+  "user_id": 7,                // required
+  "role": "member"             // optional (default: member)
+}</pre>
+                    </div>
+                    <div class="coolbox">
+                        <h4 class="pb-3 font-semibold">POST /plans</h4>
+                        <pre class="text-xs bg-neutral-100 dark:bg-coolgray-300 rounded p-3 overflow-x-auto">{
+  "name": "Pro",               // required
+  "price": 29.00,              // optional
+  "billing_cycle": "monthly",  // optional (free|monthly|yearly|lifetime)
+  "features": ["Feature A"],   // optional
+  "resources_limit": 50,       // optional (null = unlimited)
+  "projects_limit": 10,        // optional
+  "bandwidth_limit": 100,      // optional (GB)
+  "storage_limit": 50,         // optional (GB)
+  "team_members_limit": 5      // optional
+}</pre>
+                    </div>
+                    <div class="coolbox">
+                        <h4 class="pb-3 font-semibold">POST /assign</h4>
+                        <pre class="text-xs bg-neutral-100 dark:bg-coolgray-300 rounded p-3 overflow-x-auto">{
+  "team_id": 3,                // required
+  "plan_id": 1,                // required
+  "status": "active",          // optional (active|trial)
+  "starts_at": "2026-04-01",   // optional
+  "expires_at": "2027-04-01",  // optional
+  "notes": "Promo deal"        // optional
+}</pre>
+                    </div>
+                    <div class="coolbox">
+                        <h4 class="pb-3 font-semibold">POST /cancel</h4>
+                        <pre class="text-xs bg-neutral-100 dark:bg-coolgray-300 rounded p-3 overflow-x-auto">{
+  "team_id": 3                 // required
+}</pre>
+                    </div>
+                    <div class="coolbox">
+                        <h4 class="pb-3 font-semibold">POST /payments</h4>
+                        <pre class="text-xs bg-neutral-100 dark:bg-coolgray-300 rounded p-3 overflow-x-auto">{
+  "team_id": 3,                // required
+  "amount": 29.00,             // required
+  "currency": "USD",           // optional (default: USD)
+  "status": "paid",            // optional (paid|pending|failed|refunded)
+  "description": "April 2026", // optional
+  "paid_at": "2026-04-01",     // optional (ISO datetime)
+  "team_plan_id": 5            // optional — link to plan assignment
+}</pre>
+                    </div>
+                    <div class="coolbox">
+                        <h4 class="pb-3 font-semibold">GET /teams/{team_id}/status</h4>
+                        <p class="text-xs text-neutral-500 pb-3">No request body. Returns subscription details and current resource usage for the team.</p>
+                        <pre class="text-xs bg-neutral-100 dark:bg-coolgray-300 rounded p-3 overflow-x-auto">{
+  "team_id": 3,
+  "team_name": "Acme Corp",
+  "subscription": { ... },
+  "plan": { ... },
+  "usage": { ... }
+}</pre>
+                    </div>
+                </div>
+
+                {{-- Fetch Example --}}
+                <div class="coolbox">
+                    <h3 class="pb-3">Example Request</h3>
+                    <pre class="text-xs bg-neutral-100 dark:bg-coolgray-300 rounded p-3 overflow-x-auto">fetch('{{ config('app.url') }}/api/v1/subscription/assign', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer &lt;your-api-token&gt;',
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  },
+  body: JSON.stringify({
+    team_id: 3,
+    plan_id: 1,
+    status: 'active',
+  }),
+})
+  .then(res => res.json())
+  .then(data => console.log(data));</pre>
                 </div>
             </div>
         </div>

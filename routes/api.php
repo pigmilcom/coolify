@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\ResourcesController;
 use App\Http\Controllers\Api\SecurityController;
 use App\Http\Controllers\Api\ServersController;
 use App\Http\Controllers\Api\ServicesController;
+use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\TeamController;
 use App\Http\Middleware\ApiAllowed;
 use App\Jobs\PushServerUpdateJob;
@@ -171,6 +172,18 @@ Route::group([
     Route::match(['get', 'post'], '/services/{uuid}/start', [ServicesController::class, 'action_deploy'])->middleware(['api.ability:write']);
     Route::match(['get', 'post'], '/services/{uuid}/restart', [ServicesController::class, 'action_restart'])->middleware(['api.ability:write']);
     Route::match(['get', 'post'], '/services/{uuid}/stop', [ServicesController::class, 'action_stop'])->middleware(['api.ability:write']);
+
+    // Subscription management — intended for cross-domain/external billing apps
+    Route::prefix('subscription')->group(function () {
+        Route::post('/users', [SubscriptionController::class, 'createUser'])->middleware(['api.ability:write']);
+        Route::post('/teams', [SubscriptionController::class, 'createTeam'])->middleware(['api.ability:write']);
+        Route::post('/teams/{team_id}/members', [SubscriptionController::class, 'addTeamMember'])->middleware(['api.ability:write']);
+        Route::post('/plans', [SubscriptionController::class, 'createPlan'])->middleware(['api.ability:write']);
+        Route::post('/assign', [SubscriptionController::class, 'assignPlan'])->middleware(['api.ability:write']);
+        Route::post('/cancel', [SubscriptionController::class, 'cancelSubscription'])->middleware(['api.ability:write']);
+        Route::post('/payments', [SubscriptionController::class, 'recordPayment'])->middleware(['api.ability:write']);
+        Route::get('/teams/{team_id}/status', [SubscriptionController::class, 'teamSubscriptionStatus'])->middleware(['api.ability:read']);
+    });
 });
 
 Route::group([
