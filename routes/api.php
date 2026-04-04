@@ -175,6 +175,7 @@ Route::group([
 
     // Subscription management — intended for cross-domain/external billing apps
     Route::prefix('subscription')->group(function () {
+        Route::get('/teams', [SubscriptionController::class, 'allTeams'])->middleware(['api.ability:read']);
         Route::post('/users', [SubscriptionController::class, 'createUser'])->middleware(['api.ability:write']);
         Route::post('/teams', [SubscriptionController::class, 'createTeam'])->middleware(['api.ability:write']);
         Route::post('/teams/{team_id}/members', [SubscriptionController::class, 'addTeamMember'])->middleware(['api.ability:write']);

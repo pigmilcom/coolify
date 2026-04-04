@@ -291,6 +291,48 @@ class SubscriptionController extends Controller
     }
 
     /**
+     * Get all teams with their members and subscription data.
+     *
+     * GET /api/v1/subscription/teams
+     */
+    public function allTeams(): JsonResponse
+    {
+        $teams = Team::with(['members', 'currentTeamPlan.plan'])->get();
+
+        $data = $teams->map(function (Team $team): array {
+            $teamPlan = $team->currentTeamPlan;
+
+            return [
+                'id' => $team->id,
+                'name' => $team->name,
+                'description' => $team->description,
+                'personal_team' => (bool) $team->personal_team,
+                'created_at' => $team->created_at,
+                'members' => $team->members->map(fn ($member) => [
+                    'id' => $member->id,
+                    'name' => $member->name,
+                    'email' => $member->email,
+                    'role' => $member->pivot->role,
+                ]),
+                'subscription' => $teamPlan ? [
+                    'id' => $teamPlan->id,
+                    'status' => $teamPlan->status,
+                    'starts_at' => $teamPlan->starts_at,
+                    'expires_at' => $teamPlan->expires_at,
+                    'plan' => $teamPlan->plan ? [
+                        'id' => $teamPlan->plan->id,
+                        'name' => $teamPlan->plan->name,
+                        'billing_cycle' => $teamPlan->plan->billing_cycle,
+                        'price' => $teamPlan->plan->formattedPrice(),
+                    ] : null,
+                ] : null,
+            ];
+        });
+
+        return response()->json($data);
+    }
+
+    /**
      * Get a team's current active subscription and usage.
      *
      * GET /api/v1/subscription/teams/{team_id}/status

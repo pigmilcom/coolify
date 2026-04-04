@@ -255,6 +255,11 @@ Content-Type: application/json</pre>
                             </tr>
                             <tr>
                                 <td class="py-3 pr-4"><span class="text-xs font-semibold px-2 py-0.5 rounded bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">GET</span></td>
+                                <td class="py-3 pr-4 font-mono text-xs">/api/v1/subscription/teams</td>
+                                <td class="py-3 text-neutral-500">List all teams with members &amp; subscription</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3 pr-4"><span class="text-xs font-semibold px-2 py-0.5 rounded bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">GET</span></td>
                                 <td class="py-3 pr-4 font-mono text-xs">/api/v1/subscription/teams/{team_id}/status</td>
                                 <td class="py-3 text-neutral-500">Get team subscription &amp; usage stats</td>
                             </tr>
@@ -330,6 +335,26 @@ Content-Type: application/json</pre>
   "paid_at": "2026-04-01",     // optional (ISO datetime)
   "team_plan_id": 5            // optional — link to plan assignment
 }</pre>
+                    </div>
+                    <div class="coolbox">
+                        <h4 class="pb-3 font-semibold">GET /teams</h4>
+                        <p class="text-xs text-neutral-500 pb-3">No request body. Returns all teams with their members and active subscription data.</p>
+                        <pre class="text-xs bg-neutral-100 dark:bg-coolgray-300 rounded p-3 overflow-x-auto">[
+  {
+    "id": 1,
+    "name": "Acme Corp",
+    "description": "...",
+    "personal_team": false,
+    "created_at": "2026-04-01T00:00:00Z",
+    "members": [
+      { "id": 7, "name": "Jane", "email": "jane@...", "role": "owner" }
+    ],
+    "subscription": {
+      "id": 5, "status": "active",
+      "plan": { "id": 1, "name": "Pro", ... }
+    }
+  }
+]</pre>
                     </div>
                     <div class="coolbox">
                         <h4 class="pb-3 font-semibold">GET /teams/{team_id}/status</h4>
