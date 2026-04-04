@@ -1,6 +1,7 @@
 <div class="pb-6">
     <h1>Notifications</h1>
     <div class="subtitle">Get notified about your infrastructure.</div>
+    @can('canAccessOwnerResources')
     <div class="navbar-main">
         <nav class="flex items-center gap-3.5 min-h-10">
             <a class="{{ request()->routeIs('notifications.email') ? 'dark:text-white' : '' }}" {{ wireNavigate() }}
@@ -29,4 +30,5 @@
             </a>
         </nav>
     </div>
+    @endcan
 </div>

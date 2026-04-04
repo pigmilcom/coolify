@@ -3,6 +3,7 @@
         Notifications | Coolify
     </x-slot>
     <x-notification.navbar />
+    @can('canAccessOwnerResources')
     <form wire:submit='submit' class="flex flex-col gap-4 pb-4">
         <div class="flex items-center gap-2">
             <h2>Email</h2>
@@ -111,6 +112,7 @@
             </form>
         </div>
     @endif
+    @endcan
     <h2 class="mt-4">Notification Settings</h2>
     <p class="mb-4">
         Select events for which you would like to receive email notifications.

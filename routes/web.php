@@ -139,11 +139,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::prefix('notifications')->group(function () {
         Route::get('/email', NotificationEmail::class)->name('notifications.email');
-        Route::get('/telegram', NotificationTelegram::class)->name('notifications.telegram');
-        Route::get('/discord', NotificationDiscord::class)->name('notifications.discord');
-        Route::get('/slack', NotificationSlack::class)->name('notifications.slack');
-        Route::get('/pushover', NotificationPushover::class)->name('notifications.pushover');
-        Route::get('/webhook', NotificationWebhook::class)->name('notifications.webhook');
+        Route::middleware(['can.access.owner.resources'])->group(function () {
+            Route::get('/telegram', NotificationTelegram::class)->name('notifications.telegram');
+            Route::get('/discord', NotificationDiscord::class)->name('notifications.discord');
+            Route::get('/slack', NotificationSlack::class)->name('notifications.slack');
+            Route::get('/pushover', NotificationPushover::class)->name('notifications.pushover');
+            Route::get('/webhook', NotificationWebhook::class)->name('notifications.webhook');
+        });
     });
 
     Route::prefix('storages')->group(function () {
