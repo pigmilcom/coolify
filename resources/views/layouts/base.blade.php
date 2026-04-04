@@ -16,18 +16,18 @@
     <meta name="robots" content="noindex">
     <meta name="theme-color" content="#ffffff" id="theme-color-meta" />
     <meta name="color-scheme" content="dark light" />
-    <meta name="Description" content="CPM: An open-source & self-hostable Heroku / Netlify / Vercel alternative | Powered by Coolify" />
+    <meta name="Description" content="PIGMIL Console - Powered by Coolify" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@pigmilcom" />
-    <meta name="twitter:title" content="Console" />
-    <meta name="twitter:description" content="An open-source & self-hostable Heroku / Netlify / Vercel alternative." />
+    <meta name="twitter:title" content="PIGMIL Console" />
+    <meta name="twitter:description" content="PIGMIL Console - Powered by Coolify" />
     <meta name="twitter:image" content="https://cdn.coollabs.io/assets/coolify/og-image.png" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://console.pigmil.com" />
-<meta property="og:title" content="Console" />
-    <meta property="og:description" content="An open-source & self-hostable Heroku / Netlify / Vercel alternative." />
-    <meta property="og:site_name" content="Console" />
+<meta property="og:title" content="PIGMIL Console" />
+    <meta property="og:description" content="PIGMIL Console - Powered by Coolify" />
+    <meta property="og:site_name" content="PIGMIL Console" />
     <meta property="og:image" content="https://cdn.coollabs.io/assets/coolify/og-image.png" />
     @use('App\Models\InstanceSettings')
     @php
@@ -43,11 +43,11 @@
             }
         }
     @endphp
-    <title>@isset($title){{ $title }} | @endisset{{ $name ? trim($name) : 'Console' }} | PIGMIL</title>
+    <title>@isset($title){{ $title }} | @endisset | PIGMIL Console</title>
     @env('local')
-        <link rel="icon" href="{{ asset('coolify-logo-dev-transparent.png') }}" type="image/png" />
+        <link rel="icon" href="{{ asset('cpm-logo-dev-transparent.png') }}" type="image/png" />
     @else
-        <link rel="icon" href="{{ asset('coolify-logo.svg') }}" type="image/svg+xml" />
+        <link rel="icon" href="{{ asset('cpm-logo.svg') }}" type="image/svg+xml" />
     @endenv
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @vite(['resources/js/app.js', 'resources/css/app.css'])
