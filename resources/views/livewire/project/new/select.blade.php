@@ -137,6 +137,7 @@
                         </template>
                     </div>
                 </div>
+                @can('canAccessOwnerResources')
                 <div x-show="filteredServices.length > 0" class="mt-8">
                     <div class="flex items-center gap-4" x-init="loadResources">
                         <h2>Services</h2>
@@ -190,6 +191,7 @@
                         </template>
                     </div>
                 </div>
+                @endcan
                 <div
                     x-show="filteredGitBasedApplications.length === 0 && filteredDockerBasedApplications.length === 0 && filteredDatabases.length === 0 && filteredServices.length === 0 && loading === false">
                     <div>No resources found.</div>
@@ -228,7 +230,7 @@
                                 dockerBasedApplications,
                                 databases
                             } = await this.$wire.loadServices();
-                            this.services = services;
+                            this.services = @can('canAccessOwnerResources') services @else [] @endcan;
                             this.categories = categories || [];
                             this.gitBasedApplications = gitBasedApplications;
                             this.dockerBasedApplications = dockerBasedApplications;
