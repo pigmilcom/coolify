@@ -614,7 +614,6 @@
                     </span>
                 </template>
             </div>
-            @can('canAccessOwnerResources')
             <template x-if="filteredServices.length > 0">
                 <h2 class="pt-4">Services</h2>
             </template>
@@ -667,7 +666,6 @@
                     </span>
                 </template>
             </div>
-            @endcan
         </div>
     @endif
 
@@ -690,7 +688,7 @@
             keydbs: @js($keydbs),
             dragonflies: @js($dragonflies),
             clickhouses: @js($clickhouses),
-            services: @can('canAccessOwnerResources') @js($services) @else([]) @endcan,
+            services: @js($services),
             filterAndSort(items) {
                 if (this.search === '') {
                     return Object.values(items).sort(sortFn);

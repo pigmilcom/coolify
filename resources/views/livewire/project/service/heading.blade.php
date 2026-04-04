@@ -26,6 +26,7 @@
             @endcan
             <x-services.links :service="$service" />
         </nav>
+        @can('canAccessOwnerResources')
         @if ($service->isDeployable)
             <div class="flex flex-wrap order-first gap-2 items-center sm:order-last">
                 <x-services.advanced :service="$service" />
@@ -133,6 +134,7 @@
                 </div>
             </div>
         @endif
+        @endcan
     </div>
     @script
         <script>

@@ -10,6 +10,7 @@
                 <x-external-link /></a>
             <a class='sub-menu-item' wire:current.exact="menu-item-active" {{ wireNavigate() }}
                 href="{{ route('project.service.configuration', ['project_uuid' => $project->uuid, 'environment_uuid' => $environment->uuid, 'service_uuid' => $service->uuid]) }}"><span class="menu-item-label">General</span></a>
+            @can('canAccessOwnerResources')
             <a class='sub-menu-item' wire:current.exact="menu-item-active" {{ wireNavigate() }}
                 href="{{ route('project.service.environment-variables', ['project_uuid' => $project->uuid, 'environment_uuid' => $environment->uuid, 'service_uuid' => $service->uuid]) }}"><span class="menu-item-label">Environment Variables</span></a>
             <a class='sub-menu-item' wire:current.exact="menu-item-active" {{ wireNavigate() }}
@@ -26,6 +27,7 @@
 
             <a class='sub-menu-item' wire:current.exact="menu-item-active" {{ wireNavigate() }}
                 href="{{ route('project.service.danger', ['project_uuid' => $project->uuid, 'environment_uuid' => $environment->uuid, 'service_uuid' => $service->uuid]) }}"><span class="menu-item-label">Danger Zone</span></a>
+            @endcan
         </div>
         <div class="w-full">
             @if ($currentRoute === 'project.service.configuration')
