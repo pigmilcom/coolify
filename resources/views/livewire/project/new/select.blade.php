@@ -76,7 +76,7 @@
                 </div>
             </div>
             <div x-show="loading">Loading...</div>
-            <div x-show="!loading" class="flex flex-col gap-4 py-4">
+            <div x-show="!loading" class="flex flex-col gap-4 py-4" x-init="loadResources">
                 <h2 x-show="filteredGitBasedApplications.length > 0">Applications</h2>
                 <div x-show="filteredGitBasedApplications.length > 0 || filteredDockerBasedApplications.length > 0"
                     class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -139,7 +139,7 @@
                 </div>
                 @can('canAccessOwnerResources')
                 <div x-show="filteredServices.length > 0" class="mt-8">
-                    <div class="flex items-center gap-4" x-init="loadResources">
+                    <div class="flex items-center gap-4">
                         <h2>Services</h2>
                         <x-forms.button x-on:click="loadResources">Reload List</x-forms.button>
                     </div>
