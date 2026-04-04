@@ -220,6 +220,7 @@
                             <span class="menu-item-label">Notifications</span>
                         </a>
                     </li>
+                    @can('canAccessOwnerResources')
                     <li>
                         <a title="Keys & Tokens" {{ wireNavigate() }}
                             class="{{ request()->is('security*') ? 'menu-item-active menu-item' : 'menu-item' }}"
@@ -232,6 +233,7 @@
                             <span class="menu-item-label">Keys & Tokens</span>
                         </a>
                     </li>
+                    @endcan
                     @can('canAccessOwnerResources')
                     <li>
                         <a title="Tags" {{ wireNavigate() }}
