@@ -20,6 +20,13 @@ class Metrics extends Component
 
     public bool $networkSupported = false;
 
+    public bool $isDockerCompose = false;
+
+    /** @var array<int, array{name: string, display: string}> */
+    public array $dockerComposeContainers = [];
+
+    public string $selectedContainerUuid = '';
+
     public int $totalDeployments = 0;
 
     public int $successfulDeployments30d = 0;
@@ -36,6 +43,9 @@ class Metrics extends Component
 
     public function mount(): void
     {
+        $this->isDockerCompose = $this->resource instanceof Application
+            && $this->resource->build_pack === 'dockercompose';
+
         $this->loadStats();
     }
 
@@ -63,6 +73,40 @@ class Metrics extends Component
         $this->volumeCount = $this->resource->persistentStorages()->count();
     }
 
+    public function loadDockerComposeContainers(): void
+    {
+        try {
+            $server = $this->resource->destination->server;
+            $containers = getCurrentApplicationContainerStatus($server, $this->resource->id, 0);
+            $uuid = $this->resource->uuid;
+
+            $this->dockerComposeContainers = $containers
+                ->map(function ($container) use ($uuid) {
+                    $name = data_get($container, 'Names');
+                    if (! $name) {
+                        return null;
+                    }
+                    $display = str($name)->before("-{$uuid}")->value() ?: $name;
+
+                    return ['name' => $name, 'display' => $display];
+                })
+                ->filter()
+                ->values()
+                ->toArray();
+
+            if (! empty($this->dockerComposeContainers) && empty($this->selectedContainerUuid)) {
+                $this->selectedContainerUuid = $this->dockerComposeContainers[0]['name'];
+            }
+        } catch (\Throwable) {
+            // Server may be unreachable
+        }
+    }
+
+    public function updatedSelectedContainerUuid(): void
+    {
+        $this->loadData();
+    }
+
     public function pollData(): void
     {
         if ($this->poll || $this->interval <= 10) {
@@ -75,9 +119,27 @@ class Metrics extends Component
 
     public function loadData(): void
     {
+        if ($this->isDockerCompose && empty($this->dockerComposeContainers)) {
+            $this->loadDockerComposeContainers();
+        }
+
+        $containerUuid = ($this->isDockerCompose && $this->selectedContainerUuid)
+            ? $this->selectedContainerUuid
+            : null;
+
+        if ($this->isDockerCompose && ! $containerUuid) {
+            return;
+        }
+
         try {
-            $cpuMetrics = $this->resource->getCpuMetrics($this->interval);
-            $memoryMetrics = $this->resource->getMemoryMetrics($this->interval);
+            $cpuMetrics = $containerUuid
+                ? $this->resource->getCpuMetricsForContainer($containerUuid, $this->interval)
+                : $this->resource->getCpuMetrics($this->interval);
+
+            $memoryMetrics = $containerUuid
+                ? $this->resource->getMemoryMetricsForContainer($containerUuid, $this->interval)
+                : $this->resource->getMemoryMetrics($this->interval);
+
             $this->dispatch("refreshChartData-{$this->chartId}-cpu", [
                 'seriesData' => $cpuMetrics,
             ]);
@@ -91,7 +153,10 @@ class Metrics extends Component
         }
 
         try {
-            $networkMetrics = $this->resource->getNetworkMetrics($this->interval);
+            $networkMetrics = $containerUuid
+                ? $this->resource->getNetworkMetricsForContainer($containerUuid, $this->interval)
+                : $this->resource->getNetworkMetrics($this->interval);
+
             if ($networkMetrics !== null) {
                 $this->networkSupported = true;
                 $this->dispatch("refreshChartData-{$this->chartId}-network", $networkMetrics);

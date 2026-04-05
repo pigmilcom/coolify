@@ -16,10 +16,28 @@ trait HasMetrics
         return $this->getMetrics('memory', $mins, $field);
     }
 
+    public function getCpuMetricsForContainer(string $containerUuid, int $mins = 5): ?array
+    {
+        return $this->getMetrics('cpu', $mins, 'percent', $containerUuid);
+    }
+
+    public function getMemoryMetricsForContainer(string $containerUuid, int $mins = 5): ?array
+    {
+        return $this->getMetrics('memory', $mins, 'used', $containerUuid);
+    }
+
     /**
      * @return array{rx: array<array{int, float}>, tx: array<array{int, float}>}|null
      */
-    public function getNetworkMetrics(int $mins = 5): ?array
+    public function getNetworkMetricsForContainer(string $containerUuid, int $mins = 5): ?array
+    {
+        return $this->getNetworkMetrics($mins, $containerUuid);
+    }
+
+    /**
+     * @return array{rx: array<array{int, float}>, tx: array<array{int, float}>}|null
+     */
+    public function getNetworkMetrics(int $mins = 5, ?string $containerUuid = null): ?array
     {
         if ($this->isServerMetrics()) {
             return null;
@@ -31,7 +49,8 @@ trait HasMetrics
         }
 
         $from = now()->subMinutes($mins)->toIso8601ZuluString();
-        $endpoint = "http://localhost:8888/api/container/{$this->uuid}/network/history?from={$from}";
+        $resolvedUuid = $containerUuid ?? $this->uuid;
+        $endpoint = "http://localhost:8888/api/container/{$resolvedUuid}/network/history?from={$from}";
 
         $response = instant_remote_process(
             ["docker exec coolify-sentinel sh -c 'curl -s -H \"Authorization: Bearer {$server->settings->sentinel_token}\" {$endpoint}'"],
@@ -58,7 +77,7 @@ trait HasMetrics
         return ['rx' => $rxData, 'tx' => $txData];
     }
 
-    private function getMetrics(string $type, int $mins, string $valueField): ?array
+    private function getMetrics(string $type, int $mins, string $valueField, ?string $containerUuid = null): ?array
     {
         $server = $this->getMetricsServer();
         if (! $server->isMetricsEnabled()) {
@@ -66,7 +85,7 @@ trait HasMetrics
         }
 
         $from = now()->subMinutes($mins)->toIso8601ZuluString();
-        $endpoint = $this->getMetricsEndpoint($type, $from);
+        $endpoint = $this->getMetricsEndpoint($type, $from, $containerUuid);
 
         $response = instant_remote_process(
             ["docker exec coolify-sentinel sh -c 'curl -H \"Authorization: Bearer {$server->settings->sentinel_token}\" {$endpoint}'"],
@@ -104,13 +123,15 @@ trait HasMetrics
         return $this->isServerMetrics() ? $this : $this->destination->server;
     }
 
-    private function getMetricsEndpoint(string $type, string $from): string
+    private function getMetricsEndpoint(string $type, string $from, ?string $uuid = null): string
     {
         $base = 'http://localhost:8888/api';
         if ($this->isServerMetrics()) {
             return "{$base}/{$type}/history?from={$from}";
         }
 
-        return "{$base}/container/{$this->uuid}/{$type}/history?from={$from}";
+        $resolvedUuid = $uuid ?? $this->uuid;
+
+        return "{$base}/container/{$resolvedUuid}/{$type}/history?from={$from}";
     }
 }

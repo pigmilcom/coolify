@@ -55,15 +55,26 @@
 
     {{-- Live charts (Sentinel required) --}}
     <div>
-        @if ($resource->getMorphClass() === 'App\Models\Application' && $resource->build_pack === 'dockercompose')
-            <div class="alert alert-warning">Metrics charts are not available for Docker Compose applications yet.</div>
-        @elseif(!$resource->destination->server->isMetricsEnabled())
+        @if(!$resource->destination->server->isMetricsEnabled())
             <div class="alert alert-warning pb-1">Live metrics charts require Sentinel &amp; Metrics to be enabled on the server.</div>
             <div>Go to <a class="underline dark:text-white" href="{{ route('server.show', $resource->destination->server->uuid) }}/sentinel" {{ wireNavigate() }}>Server settings</a> to enable it.</div>
         @else
-            @if (!str($resource->status)->contains('running'))
+            @if ($isDockerCompose)
+                @if (empty($dockerComposeContainers))
+                    <div class="alert alert-warning">No running containers found for this Docker Compose application.</div>
+                @else
+                    <div class="w-64 pb-4">
+                        <x-forms.select label="Container" wire:model.live="selectedContainerUuid" id="selectedContainerUuid">
+                            @foreach ($dockerComposeContainers as $container)
+                                <option value="{{ $container['name'] }}">{{ $container['display'] }}</option>
+                            @endforeach
+                        </x-forms.select>
+                    </div>
+                @endif
+            @elseif (!str($resource->status)->contains('running'))
                 <div class="alert alert-warning">Live charts are only available when the container is running.</div>
-            @else
+            @endif
+            @if ($isDockerCompose ? !empty($dockerComposeContainers) : str($resource->status)->contains('running'))
                 <div class="flex items-end gap-3 pb-4">
                     <div class="w-48">
                         <x-forms.select label="Interval" wire:change="setInterval" id="interval">
