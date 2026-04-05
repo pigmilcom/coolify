@@ -12,7 +12,9 @@ use App\Jobs\PullTemplatesFromCDN;
 use App\Jobs\RegenerateSslCertJob;
 use App\Jobs\ScheduledJobManager;
 use App\Jobs\ServerManagerJob;
+use App\Jobs\SyncTeamStorageUsageJob;
 use App\Jobs\UpdateCoolifyJob;
+use App\Models\Team;
 use App\Models\InstanceSettings;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -56,6 +58,11 @@ class Kernel extends ConsoleKernel
 
             $this->scheduleInstance->command('uploads:clear')->everyTwoMinutes();
 
+            // Team storage usage sync
+            $this->scheduleInstance->call(function () {
+                Team::all()->each(fn (Team $team) => SyncTeamStorageUsageJob::dispatch($team));
+            })->daily()->onOneServer();
+
         } else {
             // Instance Jobs
             $this->scheduleInstance->command('horizon:snapshot')->everyFiveMinutes();
@@ -84,6 +91,11 @@ class Kernel extends ConsoleKernel
 
             // Cleanup orphaned PR preview containers daily
             $this->scheduleInstance->job(new CleanupOrphanedPreviewContainersJob)->daily()->onOneServer();
+
+            // Team storage usage sync
+            $this->scheduleInstance->call(function () {
+                Team::all()->each(fn (Team $team) => SyncTeamStorageUsageJob::dispatch($team));
+            })->daily()->onOneServer();
         }
     }
 

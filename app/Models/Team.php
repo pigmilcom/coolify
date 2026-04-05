@@ -263,7 +263,7 @@ class Team extends Model implements SendsDiscord, SendsEmail, SendsPushover, Sen
     }
 
     /**
-     * @return array{team_plan: TeamPlan|null, plan: Plan|null, projects_count: int, resources_count: int, team_members_count: int}
+     * @return array{team_plan: TeamPlan|null, plan: Plan|null, projects_count: int, resources_count: int, team_members_count: int, storage_usage_gb: float, bandwidth_usage_gb: float, usage_synced_at: \Carbon\Carbon|null}
      */
     public function planUsage(): array
     {
@@ -275,6 +275,9 @@ class Team extends Model implements SendsDiscord, SendsEmail, SendsPushover, Sen
             'projects_count' => $this->projects()->count(),
             'resources_count' => $this->totalResourcesCount(),
             'team_members_count' => $this->members()->count(),
+            'storage_usage_gb' => (float) $this->storage_usage_gb,
+            'bandwidth_usage_gb' => (float) $this->bandwidth_usage_gb,
+            'usage_synced_at' => $this->usage_synced_at,
         ];
     }
 

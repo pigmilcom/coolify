@@ -26,8 +26,8 @@
                 ['label' => 'Projects', 'current' => $projectsCount, 'limit' => $plan?->projects_limit, 'unit' => ''],
                 ['label' => 'Resources', 'current' => $resourcesCount, 'limit' => $plan?->resources_limit, 'unit' => ''],
                 ['label' => 'Team Members', 'current' => $membersCount, 'limit' => $plan?->team_members_limit, 'unit' => ''],
-                ['label' => 'Bandwidth', 'current' => 0, 'limit' => $plan?->bandwidth_limit, 'unit' => 'GB'],
-                ['label' => 'Storage', 'current' => 0, 'limit' => $plan?->storage_limit, 'unit' => 'GB'],
+                ['label' => 'Bandwidth', 'current' => $planUsage['bandwidth_usage_gb'], 'limit' => $plan?->bandwidth_limit, 'unit' => 'GB'],
+                ['label' => 'Storage', 'current' => $planUsage['storage_usage_gb'], 'limit' => $plan?->storage_limit, 'unit' => 'GB'],
             ];
         @endphp
         <div class="flex items-center gap-2 pb-2">
@@ -93,6 +93,11 @@
                     </div>
                 @endforeach
             </div>
+            @if ($planUsage['usage_synced_at'])
+                <p class="text-xs text-neutral-400 mt-2">Storage last synced {{ $planUsage['usage_synced_at']->diffForHumans() }}.</p>
+            @else
+                <p class="text-xs text-neutral-400 mt-2">Storage usage syncs daily. Run <code class="font-mono">php artisan schedule:run</code> to update now.</p>
+            @endif
         </div>
     </section>
 

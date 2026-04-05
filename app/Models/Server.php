@@ -1374,6 +1374,18 @@ $schema://$host {
         return instant_remote_process($commands, $this, false);
     }
 
+    public function getStorageUsedGb(): float
+    {
+        $used = instant_remote_process(['df / --output=used | tail -1 | tr -cd 0-9'], $this, false);
+
+        if (! $used) {
+            return 0.0;
+        }
+
+        // df reports used space in 1K-blocks → convert to GB
+        return round((int) $used / 1048576, 2);
+    }
+
     public function isIpv6(): bool
     {
         return str($this->ip)->contains(':');
