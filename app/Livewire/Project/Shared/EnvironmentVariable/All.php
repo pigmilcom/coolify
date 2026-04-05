@@ -331,7 +331,7 @@ class All extends Component
             $this->refreshEnvs();
             $this->dispatch('success', "Imported {$count} environment variable(s) from file.");
         } catch (\Throwable $e) {
-            return handleError($e, $this);
+            handleError($e, $this);
         }
     }
 

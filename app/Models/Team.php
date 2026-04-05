@@ -44,6 +44,7 @@ class Team extends Model implements SendsDiscord, SendsEmail, SendsPushover, Sen
 
     protected $casts = [
         'personal_team' => 'boolean',
+        'usage_synced_at' => 'datetime',
     ];
 
     protected static function booted()
@@ -277,7 +278,7 @@ class Team extends Model implements SendsDiscord, SendsEmail, SendsPushover, Sen
             'team_members_count' => $this->members()->count(),
             'storage_usage_gb' => (float) $this->storage_usage_gb,
             'bandwidth_usage_gb' => (float) $this->bandwidth_usage_gb,
-            'usage_synced_at' => $this->usage_synced_at,
+            'usage_synced_at' => $this->usage_synced_at ? \Carbon\Carbon::parse($this->usage_synced_at) : null,
         ];
     }
 
