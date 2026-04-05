@@ -50,11 +50,14 @@
                     instantSave id="isStripprefixEnabled" label="Strip Prefixes" canGate="update" :canResource="$application" />
             @endif
             @if ($application->build_pack === 'dockercompose')
+                @can('canAccessOwnerResources')
                 <h3>Docker Compose</h3>
                 <x-forms.checkbox instantSave id="isRawComposeDeploymentEnabled" label="Raw Compose Deployment"
                     helper="WARNING: Advanced use cases only. Your docker compose file will be deployed as-is. Nothing is modified by Coolify. You need to configure the proxy parts. More info in the <a class='underline dark:text-white' href='https://coolify.io/docs/knowledge-base/docker/compose#raw-docker-compose-deployment'>documentation.</a>"
                     canGate="update" :canResource="$application" />
+                @endcan
             @endif
+            @can('canAccessOwnerResources')
             <h3 class="pt-4">Container Names</h3>
             <x-forms.checkbox
                 helper="The deployed container will have the same name ({{ $application->uuid }}). <span class='font-bold dark:text-warning'>You will lose the rolling update feature!</span>"
@@ -88,6 +91,7 @@
                     helper="Use shallow cloning (--depth=1) to speed up deployments by only fetching the latest commit history. This reduces clone time and resource usage, especially for large repositories."
                     canGate="update" :canResource="$application" />
             @endif
+            @endcan
         </div>
 
     </div>

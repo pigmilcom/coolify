@@ -24,6 +24,7 @@
                 <a class='sub-menu-item' {{ wireNavigate() }} wire:current.exact="menu-item-active"
                     href="{{ route('project.application.source', ['project_uuid' => $project->uuid, 'environment_uuid' => $environment->uuid, 'application_uuid' => $application->uuid]) }}"><span class="menu-item-label">Git Source</span></a>
             @endif
+            @can('canAccessOwnerResources')
             <a class="sub-menu-item flex items-center gap-2" {{ wireNavigate() }} wire:current.exact="menu-item-active"
                 href="{{ route('project.application.servers', ['project_uuid' => $project->uuid, 'environment_uuid' => $environment->uuid, 'application_uuid' => $application->uuid]) }}"><span class="menu-item-label">Servers</span>
                 @if ($application->server_status == false)
@@ -42,6 +43,7 @@
                     </span>
                 @endif
             </a>
+            @endcan
             <a class="sub-menu-item" {{ wireNavigate() }} wire:current.exact="menu-item-active"
                 href="{{ route('project.application.scheduled-tasks.show', ['project_uuid' => $project->uuid, 'environment_uuid' => $environment->uuid, 'application_uuid' => $application->uuid]) }}"><span class="menu-item-label">Scheduled Tasks</span></a>
             <a class="sub-menu-item" {{ wireNavigate() }} wire:current.exact="menu-item-active"
@@ -56,14 +58,18 @@
             @endif
             <a class="sub-menu-item" {{ wireNavigate() }} wire:current.exact="menu-item-active"
                 href="{{ route('project.application.rollback', ['project_uuid' => $project->uuid, 'environment_uuid' => $environment->uuid, 'application_uuid' => $application->uuid]) }}"><span class="menu-item-label">Rollback</span></a>
+            @can('canAccessOwnerResources')
             <a class="sub-menu-item" {{ wireNavigate() }} wire:current.exact="menu-item-active"
                 href="{{ route('project.application.resource-limits', ['project_uuid' => $project->uuid, 'environment_uuid' => $environment->uuid, 'application_uuid' => $application->uuid]) }}"><span class="menu-item-label">Resource Limits</span></a>
             <a class="sub-menu-item" {{ wireNavigate() }} wire:current.exact="menu-item-active"
                 href="{{ route('project.application.resource-operations', ['project_uuid' => $project->uuid, 'environment_uuid' => $environment->uuid, 'application_uuid' => $application->uuid]) }}"><span class="menu-item-label">Resource Operations</span></a>
+            @endcan
             <a class="sub-menu-item" {{ wireNavigate() }} wire:current.exact="menu-item-active"
                 href="{{ route('project.application.metrics', ['project_uuid' => $project->uuid, 'environment_uuid' => $environment->uuid, 'application_uuid' => $application->uuid]) }}"><span class="menu-item-label">Metrics</span></a>
+            @can('canAccessOwnerResources')
             <a class="sub-menu-item" {{ wireNavigate() }} wire:current.exact="menu-item-active"
                 href="{{ route('project.application.tags', ['project_uuid' => $project->uuid, 'environment_uuid' => $environment->uuid, 'application_uuid' => $application->uuid]) }}"><span class="menu-item-label">Tags</span></a>
+            @endcan
             <a class="sub-menu-item" {{ wireNavigate() }} wire:current.exact="menu-item-active"
                 href="{{ route('project.application.danger', ['project_uuid' => $project->uuid, 'environment_uuid' => $environment->uuid, 'application_uuid' => $application->uuid]) }}"><span class="menu-item-label">Danger Zone</span></a>
         </div>
@@ -81,7 +87,9 @@
             @elseif ($currentRoute === 'project.application.source' && $application->git_based())
                 <livewire:project.application.source :application="$application" />
             @elseif ($currentRoute === 'project.application.servers')
-                <livewire:project.shared.destination :resource="$application" />
+                @can('canAccessOwnerResources')
+                    <livewire:project.shared.destination :resource="$application" />
+                @endcan
             @elseif ($currentRoute === 'project.application.scheduled-tasks.show')
                 <livewire:project.shared.scheduled-task.all :resource="$application" />
             @elseif ($currentRoute === 'project.application.webhooks')
@@ -93,13 +101,19 @@
             @elseif ($currentRoute === 'project.application.rollback')
                 <livewire:project.application.rollback :application="$application" />
             @elseif ($currentRoute === 'project.application.resource-limits')
-                <livewire:project.shared.resource-limits :resource="$application" />
+                @can('canAccessOwnerResources')
+                    <livewire:project.shared.resource-limits :resource="$application" />
+                @endcan
             @elseif ($currentRoute === 'project.application.resource-operations')
-                <livewire:project.shared.resource-operations :resource="$application" />
+                @can('canAccessOwnerResources')
+                    <livewire:project.shared.resource-operations :resource="$application" />
+                @endcan
             @elseif ($currentRoute === 'project.application.metrics')
                 <livewire:project.shared.metrics :resource="$application" />
             @elseif ($currentRoute === 'project.application.tags')
-                <livewire:project.shared.tags :resource="$application" />
+                @can('canAccessOwnerResources')
+                    <livewire:project.shared.tags :resource="$application" />
+                @endcan
             @elseif ($currentRoute === 'project.application.danger')
                 <livewire:project.shared.danger :resource="$application" />
             @endif
