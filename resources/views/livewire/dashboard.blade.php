@@ -95,8 +95,6 @@
             </div>
             @if ($planUsage['usage_synced_at'])
                 <p class="text-xs text-neutral-400 mt-2">Storage last synced {{ $planUsage['usage_synced_at']->diffForHumans() }}.</p>
-            @else
-                <p class="text-xs text-neutral-400 mt-2">Storage usage syncs daily. Run <code class="font-mono">php artisan schedule:run</code> to update now.</p>
             @endif
         </div>
     </section>

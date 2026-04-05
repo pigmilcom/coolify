@@ -61,7 +61,7 @@ class Kernel extends ConsoleKernel
             // Team storage usage sync
             $this->scheduleInstance->call(function () {
                 Team::all()->each(fn (Team $team) => SyncTeamStorageUsageJob::dispatch($team));
-            })->daily()->onOneServer();
+            })->everyFiveMinutes()->onOneServer();
 
         } else {
             // Instance Jobs
@@ -95,7 +95,7 @@ class Kernel extends ConsoleKernel
             // Team storage usage sync
             $this->scheduleInstance->call(function () {
                 Team::all()->each(fn (Team $team) => SyncTeamStorageUsageJob::dispatch($team));
-            })->daily()->onOneServer();
+            })->everyFiveMinutes()->onOneServer();
         }
     }
 
