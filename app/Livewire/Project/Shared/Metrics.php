@@ -41,6 +41,14 @@ class Metrics extends Component
 
     public int $volumeCount = 0;
 
+    public ?string $storageFormatted = null;
+
+    public ?string $bandwidthRxFormatted = null;
+
+    public ?string $bandwidthTxFormatted = null;
+
+    public bool $isLoadingUsage = true;
+
     public function mount(): void
     {
         $this->isDockerCompose = $this->resource instanceof Application
@@ -110,6 +118,10 @@ class Metrics extends Component
 
     public function updatedSelectedContainerUuid(): void
     {
+        $this->isLoadingUsage = true;
+        $this->storageFormatted = null;
+        $this->bandwidthRxFormatted = null;
+        $this->bandwidthTxFormatted = null;
         $this->loadData();
     }
 
@@ -178,6 +190,47 @@ class Metrics extends Component
             $this->poll = true;
         }
         $this->loadData();
+    }
+
+    public function loadUsageData(): void
+    {
+        $containerUuid = ($this->isDockerCompose && $this->selectedContainerUuid)
+            ? $this->selectedContainerUuid
+            : null;
+
+        try {
+            $bytes = $this->resource->getContainerStorageBytes($containerUuid);
+            $this->storageFormatted = $bytes !== null ? $this->formatBytes($bytes) : null;
+        } catch (\Throwable) {
+            // Server may be unreachable or container not running
+        }
+
+        try {
+            $bw = $this->resource->getContainerBandwidthMonthBytes($containerUuid);
+            if ($bw !== null) {
+                $this->bandwidthRxFormatted = $this->formatBytes((int) $bw['rx']);
+                $this->bandwidthTxFormatted = $this->formatBytes((int) $bw['tx']);
+            }
+        } catch (\Throwable) {
+            // Sentinel not available or endpoint not supported
+        }
+
+        $this->isLoadingUsage = false;
+    }
+
+    private function formatBytes(int $bytes): string
+    {
+        if ($bytes >= 1024 ** 3) {
+            return number_format($bytes / (1024 ** 3), 2) . ' GB';
+        }
+        if ($bytes >= 1024 ** 2) {
+            return number_format($bytes / (1024 ** 2), 2) . ' MB';
+        }
+        if ($bytes >= 1024) {
+            return number_format($bytes / 1024, 2) . ' KB';
+        }
+
+        return $bytes . ' B';
     }
 
     public function render(): View

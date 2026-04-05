@@ -5,7 +5,7 @@
     <div class="pb-4">Usage stats and performance for this resource.</div>
 
     {{-- Always-visible stats cards --}}
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 pb-6">
+    <div x-init="$wire.loadUsageData()" class="grid grid-cols-2 lg:grid-cols-4 gap-3 pb-6">
         @if ($resource instanceof \App\Models\Application)
             <div class="rounded-md border border-neutral-200 dark:border-coolgray-400 bg-white dark:bg-coolgray-100 p-3">
                 <div class="text-xs text-neutral-500 dark:text-neutral-400 mb-1">Total Deployments</div>
@@ -50,6 +50,38 @@
                     <span class="text-neutral-400">{{ str($resource->status)->before(':') ?: 'Unknown' }}</span>
                 @endif
             </div>
+        </div>
+
+        {{-- Storage used (writable layer + volumes) --}}
+        <div class="rounded-md border border-neutral-200 dark:border-coolgray-400 bg-white dark:bg-coolgray-100 p-3">
+            <div class="text-xs text-neutral-500 dark:text-neutral-400 mb-1">Storage Used</div>
+            <div class="text-2xl font-bold">
+                @if ($isLoadingUsage)
+                    <span class="inline-block w-16 h-7 rounded bg-neutral-200 dark:bg-coolgray-300 animate-pulse"></span>
+                @elseif ($storageFormatted !== null)
+                    {{ $storageFormatted }}
+                @else
+                    <span class="text-sm text-neutral-400">N/A</span>
+                @endif
+            </div>
+        </div>
+
+        {{-- Bandwidth this month (RX / TX from Sentinel) --}}
+        <div class="rounded-md border border-neutral-200 dark:border-coolgray-400 bg-white dark:bg-coolgray-100 p-3 lg:col-span-2">
+            <div class="text-xs text-neutral-500 dark:text-neutral-400 mb-1">Bandwidth (this month)</div>
+            @if ($isLoadingUsage)
+                <div class="flex gap-4 mt-1">
+                    <span class="inline-block w-20 h-5 rounded bg-neutral-200 dark:bg-coolgray-300 animate-pulse"></span>
+                    <span class="inline-block w-20 h-5 rounded bg-neutral-200 dark:bg-coolgray-300 animate-pulse"></span>
+                </div>
+            @elseif ($bandwidthRxFormatted !== null || $bandwidthTxFormatted !== null)
+                <div class="flex gap-4 mt-1 text-sm">
+                    <span><span class="text-neutral-400 text-xs">↓ RX</span> <span class="font-semibold">{{ $bandwidthRxFormatted ?? '0 B' }}</span></span>
+                    <span><span class="text-neutral-400 text-xs">↑ TX</span> <span class="font-semibold">{{ $bandwidthTxFormatted ?? '0 B' }}</span></span>
+                </div>
+            @else
+                <div class="text-sm text-neutral-400">N/A — Sentinel required</div>
+            @endif
         </div>
     </div>
 
