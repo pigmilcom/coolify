@@ -13,6 +13,42 @@
             @endcan
         </div>
         <div>Environment variables (secrets) for this resource. </div>
+        @can('manageEnvironment', $resource)
+            <div
+                x-data="{
+                    dragging: false,
+                    handleDrop(e) {
+                        this.dragging = false;
+                        const file = e.dataTransfer.files[0];
+                        if (file) { this.readFile(file); }
+                    },
+                    handleFile(e) {
+                        const file = e.target.files[0];
+                        if (file) { this.readFile(file); e.target.value = ''; }
+                    },
+                    readFile(file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => { $wire.importEnvFile(e.target.result); };
+                        reader.readAsText(file);
+                    },
+                }"
+                @dragenter.prevent="dragging = true"
+                @dragover.prevent="dragging = true"
+                @dragleave.prevent="dragging = false"
+                @drop.prevent="handleDrop($event)"
+                @click="$refs.envFileInput.click()"
+                :class="dragging ? 'border-coollabs dark:border-warning bg-coolgray-100 dark:bg-coolgray-200' : 'border-coolgray-300 dark:border-coolgray-400'"
+                class="mt-2 flex cursor-pointer items-center gap-2 rounded-md border border-dashed px-4 py-3 text-sm text-neutral-500 transition-colors hover:border-coollabs hover:dark:border-warning dark:text-neutral-400"
+            >
+                <svg class="h-4 w-4 shrink-0" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="currentColor"
+                        d="M213.66 82.34l-56-56A8 8 0 0 0 152 24H56a16 16 0 0 0-16 16v176a16 16 0 0 0 16 16h144a16 16 0 0 0 16-16V88a8 8 0 0 0-2.34-5.66zM160 51.31L188.69 80H160zM200 216H56V40h88v48a8 8 0 0 0 8 8h48v120zm-42.34-61.66a8 8 0 0 1 0 11.32l-24 24a8 8 0 0 1-11.32 0l-24-24a8 8 0 0 1 11.32-11.32L120 164.69V120a8 8 0 0 1 16 0v44.69l10.34-10.35a8 8 0 0 1 11.32 0z" />
+                </svg>
+                <span x-text="dragging ? 'Drop .env file to import' : 'Drop .env file here, or click to import'"></span>
+                <input x-ref="envFileInput" type="file" accept=".env,text/plain" class="hidden"
+                    @change="handleFile($event)" />
+            </div>
+        @endcan
         @if ($resourceClass === 'App\Models\Application')
             <div class="flex flex-col gap-2 pt-2">
                 @if (data_get($resource, 'build_pack') !== 'dockercompose')

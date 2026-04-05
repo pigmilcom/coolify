@@ -313,6 +313,28 @@ class All extends Component
         return $count;
     }
 
+    public function importEnvFile(string $content): void
+    {
+        try {
+            $this->authorize('manageEnvironment', $this->resource);
+
+            $variables = parseEnvFormatToArray($content);
+
+            if (empty($variables)) {
+                $this->dispatch('error', 'No valid environment variables found in the file.');
+
+                return;
+            }
+
+            $count = $this->updateOrCreateVariables(false, $variables);
+            $this->updateOrder();
+            $this->refreshEnvs();
+            $this->dispatch('success', "Imported {$count} environment variable(s) from file.");
+        } catch (\Throwable $e) {
+            return handleError($e, $this);
+        }
+    }
+
     public function refreshEnvs()
     {
         $this->resource->refresh();
