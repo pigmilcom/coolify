@@ -29,18 +29,21 @@ class SyncTeamStorageUsageJob implements ShouldBeEncrypted, ShouldQueue, Silence
     public function handle(): void
     {
         try {
-            $totalGb = 0.0;
+            $totalStorageGb = 0.0;
+            $totalBandwidthGb = 0.0;
 
             foreach ($this->team->servers as $server) {
                 if (! $server->isFunctional()) {
                     continue;
                 }
 
-                $totalGb += $server->getStorageUsedGb();
+                $totalStorageGb += $server->getStorageUsedGb();
+                $totalBandwidthGb += $server->getNetworkBytesGb();
             }
 
             $this->team->update([
-                'storage_usage_gb' => round($totalGb, 2),
+                'storage_usage_gb' => round($totalStorageGb, 2),
+                'bandwidth_usage_gb' => round($totalBandwidthGb, 2),
                 'usage_synced_at' => now(),
             ]);
         } catch (\Throwable $e) {

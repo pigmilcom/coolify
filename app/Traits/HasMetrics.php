@@ -16,6 +16,48 @@ trait HasMetrics
         return $this->getMetrics('memory', $mins, $field);
     }
 
+    /**
+     * @return array{rx: array<array{int, float}>, tx: array<array{int, float}>}|null
+     */
+    public function getNetworkMetrics(int $mins = 5): ?array
+    {
+        if ($this->isServerMetrics()) {
+            return null;
+        }
+
+        $server = $this->getMetricsServer();
+        if (! $server->isMetricsEnabled()) {
+            return null;
+        }
+
+        $from = now()->subMinutes($mins)->toIso8601ZuluString();
+        $endpoint = "http://localhost:8888/api/container/{$this->uuid}/network/history?from={$from}";
+
+        $response = instant_remote_process(
+            ["docker exec coolify-sentinel sh -c 'curl -s -H \"Authorization: Bearer {$server->settings->sentinel_token}\" {$endpoint}'"],
+            $server,
+            false
+        );
+
+        $decoded = json_decode($response, true);
+
+        if (! is_array($decoded) || isset($decoded['error'])) {
+            return null;
+        }
+
+        $raw = collect($decoded);
+
+        if ($mins > 60 && $raw->count() > 1000) {
+            $rxData = downsampleLTTB($raw->map(fn ($m) => [(int) $m['time'], (float) ($m['rxBytes'] ?? 0)])->toArray(), 1000);
+            $txData = downsampleLTTB($raw->map(fn ($m) => [(int) $m['time'], (float) ($m['txBytes'] ?? 0)])->toArray(), 1000);
+        } else {
+            $rxData = $raw->map(fn ($m) => [(int) $m['time'], (float) ($m['rxBytes'] ?? 0)])->toArray();
+            $txData = $raw->map(fn ($m) => [(int) $m['time'], (float) ($m['txBytes'] ?? 0)])->toArray();
+        }
+
+        return ['rx' => $rxData, 'tx' => $txData];
+    }
+
     private function getMetrics(string $type, int $mins, string $valueField): ?array
     {
         $server = $this->getMetricsServer();

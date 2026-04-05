@@ -15,7 +15,7 @@
     @endif
 
     {{-- Plan Stats --}}
-    <section class="mb-6">
+    <section class="mb-6" x-init="$wire.loadUsageData()">
         @php
             $plan = $planUsage['plan'];
             $teamPlan = $planUsage['team_plan'];
@@ -77,7 +77,11 @@
                         <div class="flex items-center justify-between text-sm mb-1">
                             <span class="font-medium">{{ $stat['label'] }}</span>
                             <span class="text-xs text-neutral-500">
-                                {{ $stat['current'] }}{{ $stat['unit'] ? ' '.$stat['unit'] : '' }}
+                                @if ($isUsageLoading && in_array($stat['label'], ['Bandwidth', 'Storage']))
+                                    <span class="inline-block w-10 h-3 rounded animate-pulse dark:bg-coolgray-300 bg-neutral-300"></span>
+                                @else
+                                    {{ $stat['current'] }}{{ $stat['unit'] ? ' '.$stat['unit'] : '' }}
+                                @endif
                                 /
                                 {{ $unlimited ? 'Unlimited' : $stat['limit'].($stat['unit'] ? ' '.$stat['unit'] : '') }}
                             </span>
@@ -85,16 +89,27 @@
                         <div class="w-full bg-neutral-200 dark:bg-coolgray-200 rounded-full h-1.5">
                             <div @class([
                                 'h-1.5 rounded-full transition-all',
-                                'bg-coollabs' => ! $isAtLimit && ! $isNearLimit,
-                                'bg-warning' => $isNearLimit,
-                                'bg-error' => $isAtLimit,
-                            ]) style="width: {{ $unlimited ? '0' : $pct }}%"></div>
+                                'animate-pulse dark:bg-coolgray-300 bg-neutral-300' => $isUsageLoading && in_array($stat['label'], ['Bandwidth', 'Storage']),
+                                'bg-coollabs' => ! $isUsageLoading && ! $isAtLimit && ! $isNearLimit,
+                                'bg-warning' => ! $isUsageLoading && $isNearLimit,
+                                'bg-error' => ! $isUsageLoading && $isAtLimit,
+                            ]) style="width: {{ ($isUsageLoading && in_array($stat['label'], ['Bandwidth', 'Storage'])) ? '0' : ($unlimited ? '0' : $pct) }}%"></div>
                         </div>
                     </div>
                 @endforeach
             </div>
-            @if ($planUsage['usage_synced_at'])
-                <p class="text-xs text-neutral-400 mt-2">Storage last synced {{ $planUsage['usage_synced_at']->diffForHumans() }}.</p>
+            @if ($isUsageLoading)
+                <p class="text-xs text-neutral-400 mt-2">Syncing storage &amp; bandwidth...</p>
+            @elseif ($planUsage['usage_synced_at'])
+                <p class="text-xs text-neutral-400 mt-2">
+                    Synced {{ $planUsage['usage_synced_at']->diffForHumans() }}.
+                    <button wire:click="loadUsageData" class="underline hover:text-neutral-300 cursor-pointer">Refresh</button>
+                </p>
+            @else
+                <p class="text-xs text-neutral-400 mt-2">
+                    Usage not yet synced.
+                    <button wire:click="loadUsageData" class="underline hover:text-neutral-300 cursor-pointer">Sync now</button>
+                </p>
             @endif
         </div>
     </section>

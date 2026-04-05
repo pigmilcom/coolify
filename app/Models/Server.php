@@ -1386,6 +1386,22 @@ $schema://$host {
         return round((int) $used / 1048576, 2);
     }
 
+    public function getNetworkBytesGb(): float
+    {
+        // Reads cumulative RX+TX bytes from all non-loopback interfaces via /proc/net/dev
+        $bytes = instant_remote_process(
+            ["cat /proc/net/dev | awk 'NR>2 && !/lo/ {rx+=$2; tx+=$10} END {printf \"%.0f\", rx+tx}'"],
+            $this,
+            false
+        );
+
+        if (! $bytes || ! is_numeric(trim($bytes))) {
+            return 0.0;
+        }
+
+        return round((float) trim($bytes) / (1024 ** 3), 2);
+    }
+
     public function isIpv6(): bool
     {
         return str($this->ip)->contains(':');

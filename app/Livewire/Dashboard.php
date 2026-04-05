@@ -18,7 +18,9 @@ class Dashboard extends Component
 
     public array $planUsage = [];
 
-    public function mount()
+    public bool $isUsageLoading = false;
+
+    public function mount(): void
     {
         $this->privateKeys = PrivateKey::ownedByCurrentTeamCached();
         $this->servers = Server::ownedByCurrentTeamCached();
@@ -26,7 +28,44 @@ class Dashboard extends Component
         $this->planUsage = currentTeam()->planUsage();
     }
 
-    public function render()
+    public function loadUsageData(): void
+    {
+        $synced = $this->planUsage['usage_synced_at'] ?? null;
+
+        if ($synced && $synced->diffInMinutes(now()) < 5) {
+            return;
+        }
+
+        $this->isUsageLoading = true;
+
+        try {
+            $totalStorageGb = 0.0;
+            $totalBandwidthGb = 0.0;
+
+            foreach (currentTeam()->servers as $server) {
+                if (! $server->isFunctional()) {
+                    continue;
+                }
+
+                $totalStorageGb += $server->getStorageUsedGb();
+                $totalBandwidthGb += $server->getNetworkBytesGb();
+            }
+
+            currentTeam()->update([
+                'storage_usage_gb' => round($totalStorageGb, 2),
+                'bandwidth_usage_gb' => round($totalBandwidthGb, 2),
+                'usage_synced_at' => now(),
+            ]);
+
+            $this->planUsage = currentTeam()->fresh()->planUsage();
+        } catch (\Throwable $e) {
+            handleError($e, $this);
+        } finally {
+            $this->isUsageLoading = false;
+        }
+    }
+
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.dashboard');
     }
