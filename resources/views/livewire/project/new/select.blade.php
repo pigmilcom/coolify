@@ -1,6 +1,10 @@
 <div x-data x-init="$wire.loadServers">
     <div x-data="searchResources()">
         @if ($current_step === 'type')
+            @php
+                $resourcesLimit = $planUsage['plan']?->resources_limit;
+                $atResourcesLimit = $resourcesLimit !== null && $planUsage['resources_count'] >= $resourcesLimit;
+            @endphp
             <div x-init="window.addEventListener('scroll', () => isSticky = window.pageYOffset > 100)"
                 class="sticky z-10 top-0  backdrop-blur-sm border-b border-neutral-200 dark:border-coolgray-400">
                 <div class="flex flex-col gap-4 lg:flex-row">
@@ -75,6 +79,23 @@
                     </div>
                 </div>
             </div>
+            @if ($atResourcesLimit)
+                <div class="mt-4 p-4 bg-warning/10 border border-warning rounded-lg flex items-center gap-3">
+                    <svg class="size-4 text-warning shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                    </svg>
+                    <p class="text-sm text-warning font-medium">
+                        You've reached your plan's resource limit of {{ $resourcesLimit }}.
+                        @can('canAccessPlan')
+                            <a href="{{ route('plan.show') }}" {{ wireNavigate() }} class="underline hover:opacity-80">Upgrade your plan</a> to add more resources.
+                        @endcan
+                        @can('canAccessOwnerResources')
+                            <a href="{{ route('subscriptions.index') }}" {{ wireNavigate() }} class="underline hover:opacity-80">Upgrade your plan</a> to add more resources.
+                        @endcan
+                    </p>
+                </div>
+            @endif
+            <div @class(['pointer-events-none opacity-50 select-none' => $atResourcesLimit])>
             <div x-show="loading">Loading...</div>
             <div x-show="!loading" class="flex flex-col gap-4 py-4" x-init="loadResources">
                 <h2 x-show="filteredGitBasedApplications.length > 0">Applications</h2>
@@ -196,6 +217,7 @@
                     x-show="filteredGitBasedApplications.length === 0 && filteredDockerBasedApplications.length === 0 && filteredDatabases.length === 0 && filteredServices.length === 0 && loading === false">
                     <div>No resources found.</div>
                 </div>
+            </div>
             </div>
             <script>
                 function sortFn(a, b) {

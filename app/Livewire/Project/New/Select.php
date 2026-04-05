@@ -51,6 +51,8 @@ class Select extends Component
 
     public ?string $existingPostgresqlUrl = null;
 
+    public array $planUsage = [];
+
     protected $queryString = [
         'server_id',
         'type' => ['except' => ''],
@@ -61,6 +63,7 @@ class Select extends Component
     {
         try {
             $this->parameters = get_route_parameters();
+            $this->planUsage = currentTeam()->planUsage();
             if (isDev()) {
                 $this->existingPostgresqlUrl = 'postgres://coolify:password@coolify-db:5432';
             }

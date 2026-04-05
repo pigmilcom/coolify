@@ -5,6 +5,8 @@
     @php
         $projectsLimit = $planUsage['plan']?->projects_limit;
         $atProjectsLimit = $projectsLimit !== null && $planUsage['projects_count'] >= $projectsLimit;
+        $resourcesLimit = $planUsage['plan']?->resources_limit;
+        $atResourcesLimit = $resourcesLimit !== null && $planUsage['resources_count'] >= $resourcesLimit;
     @endphp
     <div class="flex gap-2">
         <h1>Projects</h1>
@@ -47,13 +49,15 @@
                     <div class="relative z-10 flex items-center justify-center gap-4 text-xs font-bold">
                         @if ($project->environments->first())
                             @can('createAnyResource')
-                                <a class="hover:underline" {{ wireNavigate() }}
-                                    href="{{ route('project.resource.create', [
-                                        'project_uuid' => $project->uuid,
-                                        'environment_uuid' => $project->environments->first()->uuid,
-                                    ]) }}">
-                                    + Add Resource
-                                </a>
+                                @if (! $atResourcesLimit)
+                                    <a class="hover:underline" {{ wireNavigate() }}
+                                        href="{{ route('project.resource.create', [
+                                            'project_uuid' => $project->uuid,
+                                            'environment_uuid' => $project->environments->first()->uuid,
+                                        ]) }}">
+                                        + Add Resource
+                                    </a>
+                                @endif
                             @endcan
                         @endif
                         @can('update', $project)
