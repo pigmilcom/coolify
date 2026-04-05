@@ -103,7 +103,31 @@
             @endcan
         </nav>
         <div class="order-first sm:order-last">
-            <div>
+            <div class="flex items-center gap-2">
+                @can('redeployServer', $server)
+                    <button
+                        wire:click="runRedeploy"
+                        wire:loading.attr="disabled"
+                        wire:target="runRedeploy"
+                        class="gap-2 button"
+                    >
+                        <span wire:loading.remove wire:target="runRedeploy" class="flex items-center gap-1">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 16v-2.172a2 2 0 0 1 .586-1.414l5-5a2 2 0 0 1 2.828 0l3.172 3.172M4 16H2m2 0v2m14-6-1.172-1.172a2 2 0 0 0-2.828 0L15 10M20 16v-2.172a2 2 0 0 0-.586-1.414L18 11m2 5h2m-2 0v2M10 4l1 1" />
+                            </svg>
+                            Redeploy
+                        </span>
+                        <span wire:loading wire:target="runRedeploy" class="flex items-center gap-1">
+                            <svg class="w-4 h-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Redeploying...
+                        </span>
+                    </button>
+                @endcan
+                <div>
                 @if ($server->proxySet())
                     @if ($proxyStatus === 'running')
                             <div class="flex gap-2">
@@ -192,8 +216,12 @@
                     $wire.$on('stopEvent', () => {
                         $wire.$call('stop');
                     });
+                    $wire.$on('redeployCompleted', () => {
+                        setTimeout(() => window.location.reload(), 1500);
+                    });
                 </script>
                 @endscript
+            </div>
             </div>
         </div>
     </div>

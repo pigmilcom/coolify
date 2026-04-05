@@ -32,6 +32,8 @@ class Navbar extends Component
 
     public bool $restartInitiated = false;
 
+    public bool $isRedeploying = false;
+
     public function getListeners()
     {
         $teamId = auth()->user()->currentTeam()->id;
@@ -201,6 +203,28 @@ class Navbar extends Component
     {
         $this->server->refresh();
         $this->server->load('settings');
+    }
+
+    public function runRedeploy(): void
+    {
+        try {
+            $this->authorize('redeployServer', $this->server);
+
+            $this->isRedeploying = true;
+
+            instant_remote_process(
+                ['curl -fsSL https://raw.githubusercontent.com/pigmilcom/cpm/v4.x/scripts/update.sh | bash'],
+                $this->server,
+                false
+            );
+
+            $this->dispatch('success', 'Server redeployed successfully.');
+            $this->dispatch('redeployCompleted');
+        } catch (\Throwable $e) {
+            handleError($e, $this);
+        } finally {
+            $this->isRedeploying = false;
+        }
     }
 
     /**

@@ -47,6 +47,10 @@ class Metrics extends Component
             && $this->resource->build_pack === 'dockercompose';
 
         $this->loadStats();
+
+        if ($this->isDockerCompose) {
+            $this->loadDockerComposeContainers();
+        }
     }
 
     public function loadStats(): void
@@ -86,6 +90,8 @@ class Metrics extends Component
                     if (! $name) {
                         return null;
                     }
+                    // Strip leading slash sometimes present in docker ps JSON output
+                    $name = ltrim($name, '/');
                     $display = str($name)->before("-{$uuid}")->value() ?: $name;
 
                     return ['name' => $name, 'display' => $display];

@@ -101,4 +101,12 @@ class ServerPolicy
         // return $user->isAdmin() && $user->teams->contains('id', $server->team_id);
         return true;
     }
+
+    /**
+     * Determine whether the user can redeploy (run the update script) on the server.
+     */
+    public function redeployServer(User $user, Server $server): bool
+    {
+        return $user->isAdmin() || $user->isOwner();
+    }
 }
