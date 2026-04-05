@@ -216,8 +216,34 @@
                     $wire.$on('stopEvent', () => {
                         $wire.$call('stop');
                     });
-                    $wire.$on('redeployCompleted', () => {
-                        setTimeout(() => window.location.reload(), 1500);
+                    $wire.$on('redeployStarted', () => {
+                        // Show full-page overlay and poll until the server comes back online
+                        const overlay = document.createElement('div');
+                        overlay.id = 'redeploy-overlay';
+                        overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;background:rgba(0,0,0,0.75);color:#fff;font-size:1rem;';
+                        overlay.innerHTML = `
+                            <svg style="width:2.5rem;height:2.5rem;animation:spin 1s linear infinite" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+                                <circle style="opacity:.25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path style="opacity:.75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <div style="font-weight:600;font-size:1.15rem">Redeploying server…</div>
+                            <div style="opacity:.7;font-size:.9rem">The server will restart shortly. Waiting for it to come back online.</div>
+                        `;
+                        document.body.appendChild(overlay);
+
+                        // Poll the current page URL until a non-502/503 response is received
+                        const poll = setInterval(async () => {
+                            try {
+                                const res = await fetch(window.location.href, { method: 'HEAD', cache: 'no-store' });
+                                if (res.ok) {
+                                    clearInterval(poll);
+                                    window.location.reload();
+                                }
+                            } catch (_) {
+                                // Server still down — keep polling
+                            }
+                        }, 3000);
                     });
                 </script>
                 @endscript

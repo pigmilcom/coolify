@@ -212,18 +212,18 @@ class Navbar extends Component
 
             $this->isRedeploying = true;
 
+            // Run detached so the SSH connection closes before the update script
+            // restarts the Coolify service — otherwise the response never arrives.
             instant_remote_process(
-                ['curl -fsSL https://raw.githubusercontent.com/pigmilcom/cpm/v4.x/scripts/update.sh | bash'],
+                ['nohup bash -c \'curl -fsSL https://raw.githubusercontent.com/pigmilcom/cpm/v4.x/scripts/update.sh | bash\' > /tmp/coolify-redeploy.log 2>&1 & disown'],
                 $this->server,
                 false
             );
 
-            $this->dispatch('success', 'Server redeployed successfully.');
-            $this->dispatch('redeployCompleted');
+            $this->dispatch('redeployStarted');
         } catch (\Throwable $e) {
-            handleError($e, $this);
-        } finally {
             $this->isRedeploying = false;
+            handleError($e, $this);
         }
     }
 
