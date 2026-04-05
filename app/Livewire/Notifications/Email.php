@@ -152,13 +152,15 @@ class Email extends Component
             $this->settings->backup_failure_email_notifications = $this->backupFailureEmailNotifications;
             $this->settings->scheduled_task_success_email_notifications = $this->scheduledTaskSuccessEmailNotifications;
             $this->settings->scheduled_task_failure_email_notifications = $this->scheduledTaskFailureEmailNotifications;
-            $this->settings->docker_cleanup_success_email_notifications = $this->dockerCleanupSuccessEmailNotifications;
-            $this->settings->docker_cleanup_failure_email_notifications = $this->dockerCleanupFailureEmailNotifications;
-            $this->settings->server_disk_usage_email_notifications = $this->serverDiskUsageEmailNotifications;
-            $this->settings->server_reachable_email_notifications = $this->serverReachableEmailNotifications;
-            $this->settings->server_unreachable_email_notifications = $this->serverUnreachableEmailNotifications;
-            $this->settings->server_patch_email_notifications = $this->serverPatchEmailNotifications;
-            $this->settings->traefik_outdated_email_notifications = $this->traefikOutdatedEmailNotifications;
+            if (auth()->user()->isOwner()) {
+                $this->settings->docker_cleanup_success_email_notifications = $this->dockerCleanupSuccessEmailNotifications;
+                $this->settings->docker_cleanup_failure_email_notifications = $this->dockerCleanupFailureEmailNotifications;
+                $this->settings->server_disk_usage_email_notifications = $this->serverDiskUsageEmailNotifications;
+                $this->settings->server_reachable_email_notifications = $this->serverReachableEmailNotifications;
+                $this->settings->server_unreachable_email_notifications = $this->serverUnreachableEmailNotifications;
+                $this->settings->server_patch_email_notifications = $this->serverPatchEmailNotifications;
+                $this->settings->traefik_outdated_email_notifications = $this->traefikOutdatedEmailNotifications;
+            }
             $this->settings->save();
 
         } else {

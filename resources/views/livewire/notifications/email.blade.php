@@ -148,6 +148,7 @@
                     label="Scheduled Task Failure" />
             </div>
         </div>
+        @can('canAccessOwnerResources')
         <div class="border dark:border-coolgray-300 border-neutral-200 p-4 rounded-lg">
             <h3 class="font-medium mb-3">Server</h3>
             <div class="flex flex-col gap-1.5 pl-1">
@@ -167,5 +168,6 @@
                     label="Traefik Proxy Outdated" />
             </div>
         </div>
+        @endcan
     </div>
 </div>
