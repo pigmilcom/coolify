@@ -97,20 +97,7 @@
                         </div>
                     </div>
                 @endforeach
-            </div>
-            @if ($isUsageLoading)
-                <p class="text-xs text-neutral-400 mt-2">Syncing storage &amp; bandwidth...</p>
-            @elseif ($planUsage['usage_synced_at'])
-                <p class="text-xs text-neutral-400 mt-2">
-                    Synced {{ $planUsage['usage_synced_at']->diffForHumans() }}.
-                    <button wire:click="loadUsageData" class="underline hover:text-neutral-300 cursor-pointer">Refresh</button>
-                </p>
-            @else
-                <p class="text-xs text-neutral-400 mt-2">
-                    Usage not yet synced.
-                    <button wire:click="loadUsageData" class="underline hover:text-neutral-300 cursor-pointer">Sync now</button>
-                </p>
-            @endif
+            </div> 
         </div>
     </section>
 
