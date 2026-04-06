@@ -27,6 +27,9 @@ function create_standalone_postgresql($environmentId, $destinationUuid, ?array $
     $database->environment_id = $environmentId;
     $database->destination_id = $destination->id;
     $database->destination_type = $destination->getMorphClass();
+    if ($destination->server) {
+        $database->public_port = get_next_available_database_public_port($destination->server);
+    }
     if ($otherData) {
         $database->fill($otherData);
     }
@@ -51,6 +54,9 @@ function create_standalone_redis($environment_id, $destination_uuid, ?array $oth
     $database->environment_id = $environment_id;
     $database->destination_id = $destination->id;
     $database->destination_type = $destination->getMorphClass();
+    if ($destination->server) {
+        $database->public_port = get_next_available_database_public_port($destination->server);
+    }
     if ($otherData) {
         $database->fill($otherData);
     }
@@ -85,6 +91,9 @@ function create_standalone_mongodb($environment_id, $destination_uuid, ?array $o
     $database->environment_id = $environment_id;
     $database->destination_id = $destination->id;
     $database->destination_type = $destination->getMorphClass();
+    if ($destination->server) {
+        $database->public_port = get_next_available_database_public_port($destination->server);
+    }
     if ($otherData) {
         $database->fill($otherData);
     }
@@ -104,6 +113,9 @@ function create_standalone_mysql($environment_id, $destination_uuid, ?array $oth
     $database->environment_id = $environment_id;
     $database->destination_id = $destination->id;
     $database->destination_type = $destination->getMorphClass();
+    if ($destination->server) {
+        $database->public_port = get_next_available_database_public_port($destination->server);
+    }
     if ($otherData) {
         $database->fill($otherData);
     }
@@ -123,6 +135,9 @@ function create_standalone_mariadb($environment_id, $destination_uuid, ?array $o
     $database->environment_id = $environment_id;
     $database->destination_id = $destination->id;
     $database->destination_type = $destination->getMorphClass();
+    if ($destination->server) {
+        $database->public_port = get_next_available_database_public_port($destination->server);
+    }
     if ($otherData) {
         $database->fill($otherData);
     }
@@ -141,6 +156,9 @@ function create_standalone_keydb($environment_id, $destination_uuid, ?array $oth
     $database->environment_id = $environment_id;
     $database->destination_id = $destination->id;
     $database->destination_type = $destination->getMorphClass();
+    if ($destination->server) {
+        $database->public_port = get_next_available_database_public_port($destination->server);
+    }
     if ($otherData) {
         $database->fill($otherData);
     }
@@ -159,6 +177,9 @@ function create_standalone_dragonfly($environment_id, $destination_uuid, ?array 
     $database->environment_id = $environment_id;
     $database->destination_id = $destination->id;
     $database->destination_type = $destination->getMorphClass();
+    if ($destination->server) {
+        $database->public_port = get_next_available_database_public_port($destination->server);
+    }
     if ($otherData) {
         $database->fill($otherData);
     }
@@ -177,6 +198,9 @@ function create_standalone_clickhouse($environment_id, $destination_uuid, ?array
     $database->environment_id = $environment_id;
     $database->destination_id = $destination->id;
     $database->destination_type = $destination->getMorphClass();
+    if ($destination->server) {
+        $database->public_port = get_next_available_database_public_port($destination->server);
+    }
     if ($otherData) {
         $database->fill($otherData);
     }
@@ -439,6 +463,49 @@ function deleteOldBackupsFromS3($backup): Collection
     }
 
     return $processedBackups;
+}
+
+function get_next_available_database_public_port(Server $server): ?int
+{
+    $settings = instanceSettings();
+    $min = $settings->public_port_min ?? 9000;
+    $max = $settings->public_port_max ?? 9100;
+
+    $usedPorts = collect([
+        StandalonePostgresql::whereNotNull('public_port')->pluck('public_port'),
+        StandaloneRedis::whereNotNull('public_port')->pluck('public_port'),
+        StandaloneMongodb::whereNotNull('public_port')->pluck('public_port'),
+        StandaloneMysql::whereNotNull('public_port')->pluck('public_port'),
+        StandaloneMariadb::whereNotNull('public_port')->pluck('public_port'),
+        StandaloneKeydb::whereNotNull('public_port')->pluck('public_port'),
+        StandaloneDragonfly::whereNotNull('public_port')->pluck('public_port'),
+        StandaloneClickhouse::whereNotNull('public_port')->pluck('public_port'),
+    ])->flatten()->map(fn ($p) => (int) $p)->filter(fn ($p) => $p > 0)->unique()->all();
+
+    for ($port = $min; $port <= $max; $port++) {
+        if (in_array($port, $usedPorts, true)) {
+            continue;
+        }
+
+        if ($server->isFunctional()) {
+            try {
+                $output = instant_remote_process(
+                    ["ss -tuln 2>/dev/null | grep -c ':{$port} ' || echo 0"],
+                    $server,
+                    false
+                );
+                if ((int) trim($output ?? '0') > 0) {
+                    continue;
+                }
+            } catch (\Throwable) {
+                // SSH check failed; rely on DB record deduplication
+            }
+        }
+
+        return $port;
+    }
+
+    return null;
 }
 
 function isPublicPortAlreadyUsed(Server $server, int $port, ?string $id = null): bool

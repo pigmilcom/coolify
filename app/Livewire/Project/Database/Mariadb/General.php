@@ -227,10 +227,20 @@ class General extends Component
             $this->authorize('update', $this->database);
 
             if ($this->isPublic && ! $this->publicPort) {
-                $this->dispatch('error', 'Public port is required.');
-                $this->isPublic = false;
+                if (! $this->server) {
+                    $this->dispatch('error', 'Server is not configured.');
+                    $this->isPublic = false;
 
-                return;
+                    return;
+                }
+                $port = get_next_available_database_public_port($this->server);
+                if (! $port) {
+                    $this->dispatch('error', 'No available public port found in the configured port range.');
+                    $this->isPublic = false;
+
+                    return;
+                }
+                $this->publicPort = $port;
             }
             if ($this->isPublic && ! str($this->database->status)->startsWith('running')) {
                 $this->dispatch('error', 'Database must be started to be publicly accessible.');

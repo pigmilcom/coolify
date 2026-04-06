@@ -153,8 +153,8 @@
                 </div>
                 <x-forms.checkbox instantSave id="isPublic" label="Make it publicly available" canGate="update" :canResource="$database" />
             </div>
-            <x-forms.input placeholder="5432" disabled="{{ $isPublic }}"
-                id="publicPort" label="Public Port" canGate="update" :canResource="$database" />
+            <x-forms.input placeholder="3306" :disabled="true"
+                id="publicPort" label="Public Port" helper="Auto-assigned from the configured port range." canGate="update" :canResource="$database" />
         </div>
         <x-forms.textarea label="Custom Mysql Configuration" rows="10" id="mysqlConf" canGate="update" :canResource="$database" />
         <h3 class="pt-4">Advanced</h3>
