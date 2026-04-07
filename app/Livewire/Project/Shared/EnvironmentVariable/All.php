@@ -318,6 +318,12 @@ class All extends Component
         try {
             $this->authorize('manageEnvironment', $this->resource);
 
+            if (empty(trim($content))) {
+                $this->dispatch('error', 'The .env file is empty.');
+
+                return;
+            }
+
             $variables = parseEnvFormatToArray($content);
 
             if (empty($variables)) {
@@ -326,13 +332,57 @@ class All extends Component
                 return;
             }
 
+            $dockerEnvKeys = $this->getDockerEnvironmentKeys();
+            $skippedCount = 0;
+
+            foreach (array_keys($variables) as $key) {
+                if (in_array($key, $dockerEnvKeys, true)) {
+                    unset($variables[$key]);
+                    $skippedCount++;
+                }
+            }
+
+            if (empty($variables)) {
+                $this->dispatch('error', 'All variables in the file are already defined in the Docker Compose or Dockerfile.');
+
+                return;
+            }
+
             $count = $this->updateOrCreateVariables(false, $variables);
             $this->updateOrder();
             $this->refreshEnvs();
-            $this->dispatch('success', "Imported {$count} environment variable(s) from file.");
+
+            $message = "Imported {$count} environment variable(s) from file.";
+            if ($skippedCount > 0) {
+                $message .= " {$skippedCount} variable(s) skipped (already defined in Docker Compose/Dockerfile).";
+            }
+            $this->dispatch('success', $message);
         } catch (\Throwable $e) {
             handleError($e, $this);
         }
+    }
+
+    private function getDockerEnvironmentKeys(): array
+    {
+        $type = $this->resource->type();
+
+        if ($type === 'service') {
+            return $this->extractDockerComposeEnvKeys(data_get($this->resource, 'docker_compose'));
+        }
+
+        if ($type === 'application') {
+            $buildPack = data_get($this->resource, 'build_pack');
+
+            if ($buildPack === 'dockercompose') {
+                return $this->extractDockerComposeEnvKeys(data_get($this->resource, 'docker_compose'));
+            }
+
+            if ($buildPack === 'dockerfile' || filled(data_get($this->resource, 'dockerfile'))) {
+                return $this->extractDockerfileEnvKeys(data_get($this->resource, 'dockerfile'));
+            }
+        }
+
+        return [];
     }
 
     public function refreshEnvs()

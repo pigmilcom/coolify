@@ -27,8 +27,13 @@
                         if (file) { this.readFile(file); e.target.value = ''; }
                     },
                     readFile(file) {
+                        if (file.size === 0) {
+                            $wire.dispatch('error', 'The .env file is empty.');
+                            return;
+                        }
                         const reader = new FileReader();
                         reader.onload = (e) => { $wire.importEnvFile(e.target.result); };
+                        reader.onerror = () => { $wire.dispatch('error', 'Failed to read the file.'); };
                         reader.readAsText(file);
                     },
                 }"

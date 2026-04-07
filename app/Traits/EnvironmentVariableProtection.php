@@ -60,4 +60,88 @@ trait EnvironmentVariableProtection
 
         return [false, ''];
     }
+
+    /**
+     * Extract all environment variable keys defined in a Docker Compose file's environment sections.
+     * Supports both list format (`- KEY=value`) and map format (`KEY: value`).
+     *
+     * @return array<string>
+     */
+    protected function extractDockerComposeEnvKeys(?string $dockerCompose): array
+    {
+        if (empty($dockerCompose)) {
+            return [];
+        }
+
+        $keys = [];
+
+        try {
+            $dockerComposeData = Yaml::parse($dockerCompose);
+            $servicesEnvs = data_get($dockerComposeData, 'services.*.environment', []);
+
+            foreach ($servicesEnvs as $serviceEnvs) {
+                if (! is_array($serviceEnvs)) {
+                    continue;
+                }
+
+                foreach ($serviceEnvs as $envKey => $envValue) {
+                    if (is_int($envKey) && is_string($envValue)) {
+                        // List format: - KEY=value or - KEY
+                        $equalsPos = strpos($envValue, '=');
+                        $parsedKey = $equalsPos !== false ? substr($envValue, 0, $equalsPos) : $envValue;
+                        $keys[] = trim($parsedKey);
+                    } else {
+                        // Map format: KEY: value
+                        $keys[] = (string) $envKey;
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            // Return empty if the compose file cannot be parsed
+        }
+
+        return array_unique($keys);
+    }
+
+    /**
+     * Extract all environment variable keys defined via ENV instructions in a Dockerfile.
+     * Supports both new syntax (`ENV KEY=VALUE`) and legacy syntax (`ENV KEY VALUE`).
+     *
+     * @return array<string>
+     */
+    protected function extractDockerfileEnvKeys(?string $dockerfile): array
+    {
+        if (empty($dockerfile)) {
+            return [];
+        }
+
+        $keys = [];
+        $lines = explode("\n", $dockerfile);
+
+        foreach ($lines as $line) {
+            $line = trim($line);
+
+            if (! preg_match('/^ENV\s+(.+)$/i', $line, $matches)) {
+                continue;
+            }
+
+            $envPart = trim($matches[1]);
+
+            if (str_contains($envPart, '=')) {
+                // New syntax: ENV KEY=VALUE (possibly multiple pairs on one line)
+                preg_match_all('/([A-Za-z_][A-Za-z0-9_]*)=/', $envPart, $keyMatches);
+                foreach ($keyMatches[1] as $key) {
+                    $keys[] = $key;
+                }
+            } else {
+                // Legacy syntax: ENV KEY VALUE
+                $parts = preg_split('/\s+/', $envPart, 2);
+                if (! empty($parts[0])) {
+                    $keys[] = $parts[0];
+                }
+            }
+        }
+
+        return array_unique($keys);
+    }
 }
